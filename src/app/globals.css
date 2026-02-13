@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+:root {
+  /* LNY / Birthday theme */
+  --red-primary: #c41e3a;
+  --red-dark: #9e1830;
+  --gold: #d4af37;
+  --gold-light: #f4e4a6;
+  --bg-cream: #fef8f0;
+  --bg-dark: #1a0f0a;
+  --text-primary: #1a0f0a;
+  --text-secondary: #5c4033;
+  --text-muted: #8b7355;
+  --white: #ffffff;
+  --background: var(--bg-cream);
+  --foreground: var(--text-primary);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  min-height: 100dvh;
+}
+
+/* Design tokens - use in components */
+.bg-red-primary { background-color: var(--red-primary); }
+.bg-gold { background-color: var(--gold); }
+.text-gold { color: var(--gold); }
