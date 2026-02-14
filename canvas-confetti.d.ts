@@ -7,6 +7,8 @@ declare module "canvas-confetti" {
     colors?: string[]
     startVelocity?: number
     scalar?: number
+    drift?: number
+    ticks?: number
   }
 
   function confetti(options?: Options): Promise<null>
