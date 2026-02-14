@@ -93,7 +93,7 @@ export default function LandingPage() {
         {/* Date badge */}
         <div className="mb-6 animate-fade-in-up px-4 py-1.5 rounded-full bg-white/70 backdrop-blur-md border border-[#e8ddd0]/80 shadow-sm">
           <span className="text-caption font-semibold text-[#5c4033] tracking-wide">
-            Feb 15 · 生日快樂
+            Birthday 2/10 · Party Feb 15 · 生日快樂
           </span>
         </div>
 
@@ -148,7 +148,7 @@ export default function LandingPage() {
                 Birthday + Lunar New Year
               </p>
               <p className="text-body text-[#5c4033] text-center mb-6">
-                Party starts Feb 15, 4pm Seattle time
+                Celebrating Ralph&apos;s 24th — party Feb 15, 4pm Seattle time
               </p>
               <Countdown />
             </div>
