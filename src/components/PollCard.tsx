@@ -47,7 +47,7 @@ export function PollCard({ poll, onVote, overrideGuestId }: PollCardProps) {
           option_id: optionId,
           guest_id: guestId,
         },
-        { onConflict: ["poll_id", "guest_id"] },
+        { onConflict: "poll_id,guest_id" },
       );
     if (error) return;
 
