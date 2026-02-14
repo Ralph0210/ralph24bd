@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getGuestId } from "@/lib/guest-id";
+import { isPartyStarted } from "@/lib/party-start";
 import { createClient } from "@/lib/supabase/client";
 import { HomeIcon, UserGroupIcon } from "@heroicons/react/24/solid";
 import { Wine, PenSquare } from "lucide-react";
@@ -38,12 +39,17 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [guestId, setGuestId] = useState<string | null>(null);
   const [myZodiac, setMyZodiac] = useState<string | null>(null);
   const [guestName, setGuestName] = useState<string>("");
   const [guestAvatar, setGuestAvatar] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [postSheetOpen, setPostSheetOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isPartyStarted()) router.replace("/");
+  }, [router]);
 
   useEffect(() => {
     setGuestId(getGuestId());

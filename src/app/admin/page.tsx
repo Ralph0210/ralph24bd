@@ -50,8 +50,8 @@ export default function AdminPage() {
         const postIds = postsData.map((p) => p.id);
         const [guestsRes, likesRes, commentsRes] = await Promise.all([
           supabase.from("guests").select("guest_id, name, avatar_url").in("guest_id", guestIds),
-          supabase.from("post_likes").select("post_id, guest_id").in("post_id", postIds).then((r) => r).catch(() => ({ data: [] })),
-          supabase.from("post_comments").select("id, post_id, guest_id, message, created_at").in("post_id", postIds).order("created_at", { ascending: true }).then((r) => r).catch(() => ({ data: [] })),
+          Promise.resolve(supabase.from("post_likes").select("post_id, guest_id").in("post_id", postIds)).catch(() => ({ data: [] as { post_id: string; guest_id: string }[] })),
+          Promise.resolve(supabase.from("post_comments").select("id, post_id, guest_id, message, created_at").in("post_id", postIds).order("created_at", { ascending: true })).catch(() => ({ data: [] as { id: string; post_id: string; guest_id: string; message: string; created_at: string }[] })),
         ]);
         const guestMap = Object.fromEntries(((guestsRes.data || []) as { guest_id: string; name: string; avatar_url: string | null }[]).map((n) => [n.guest_id, n]));
         const likesList = ((likesRes as { data?: unknown[] }).data || []) as { post_id: string; guest_id: string }[];
