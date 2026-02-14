@@ -55,7 +55,7 @@ export default function AdminPage() {
         ]);
         const guestMap = Object.fromEntries(((guestsRes.data || []) as { guest_id: string; name: string; avatar_url: string | null }[]).map((n) => [n.guest_id, n]));
         const likesList = ((likesRes as { data?: unknown[] }).data || []) as { post_id: string; guest_id: string }[];
-        const commentsList = ((commentsRes as { data?: unknown[] }).data || []) as { post_id: string; guest_id: string; message: string; created_at: string }[];
+        const commentsList = ((commentsRes as { data?: unknown[] }).data || []) as { id: string; post_id: string; guest_id: string; message: string; created_at: string }[];
         const commenterIds = [...new Set(commentsList.map((c) => c.guest_id))];
         const { data: commenterData } = await supabase.from("guests").select("guest_id, name, avatar_url").in("guest_id", commenterIds);
         const commenterMap = Object.fromEntries(((commenterData || []) as { guest_id: string; name: string; avatar_url: string | null }[]).map((n) => [n.guest_id, { name: n.name, avatar_url: n.avatar_url }]));
