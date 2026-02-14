@@ -27,11 +27,13 @@ create table if not exists party_state (
 insert into party_state (ralph_drink_count)
 select 0 where not exists (select 1 from party_state limit 1);
 
--- Prizes: config (TBD - you'll add prize types + quantities later)
+-- Prizes: add your prize types with label, quantity, microcopy, rarity
 create table if not exists prize_types (
   id uuid primary key default gen_random_uuid(),
   label text not null,
   quantity int not null,  -- how many of this prize exist
+  microcopy text,  -- shown when user reveals prize
+  rarity text,  -- e.g. "Common", "Rare", "Legendary"
   created_at timestamptz default now()
 );
 
@@ -41,6 +43,8 @@ create table if not exists prize_picks (
   guest_id text not null,
   prize_type_id uuid references prize_types(id),
   prize_label text not null,  -- denormalized for display
+  prize_microcopy text,
+  prize_rarity text,  -- denormalized
   picked_at timestamptz default now()
 );
 

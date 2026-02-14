@@ -45,14 +45,14 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-dvh bg-[#fef8f0] flex items-center justify-center">
+      <div className="min-h-dvh flex items-center justify-center">
         <p className="text-[#5c4033]">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-dvh bg-[#fef8f0] px-6 py-10 max-w-lg mx-auto">
+    <div className="min-h-dvh px-6 py-10 max-w-lg mx-auto">
       <h1 className="text-2xl font-bold text-[#1a0f0a] mb-2">
         Host mode
       </h1>

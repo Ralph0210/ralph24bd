@@ -34,3 +34,85 @@ body {
 .bg-red-primary { background-color: var(--red-primary); }
 .bg-gold { background-color: var(--gold); }
 .text-gold { color: var(--gold); }
+
+/* Envelope reveal animations */
+@keyframes envelope-shine {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+@keyframes card-pull-out {
+  0% { transform: translateY(80%) scale(0.85); opacity: 0; }
+  70% { transform: translateY(-5%) scale(1.02); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes envelope-enlarge-slide {
+  0% { transform: scale(1) translateY(0); }
+  40% { transform: scale(1.15) translateY(0); }
+  100% { transform: scale(1.15) translateY(56px); }
+}
+
+.animate-card-pull-out {
+  animation: card-pull-out 0.65s ease-out 0.2s forwards;
+}
+
+.animate-envelope-reveal {
+  animation: envelope-enlarge-slide 0.6s ease-out forwards;
+}
+
+/* Rarity page backgrounds */
+.bg-rarity-common { background-color: #fef8f0; }
+.bg-rarity-rare { background: linear-gradient(180deg, #eff6ff 0%, #fef8f0 100%); }
+.bg-rarity-epic { background: linear-gradient(180deg, #faf5ff 0%, #fef8f0 100%); }
+.bg-rarity-legendary { background: linear-gradient(180deg, #fffbeb 0%, #fef8f0 100%); }
+
+.animate-envelope-shine {
+  animation: envelope-shine 2s ease-in-out infinite;
+}
+
+.envelope-shine-common { --shine-r: 212; --shine-g: 175; --shine-b: 55; }
+.envelope-shine-rare { --shine-r: 59; --shine-g: 130; --shine-b: 246; }
+.envelope-shine-epic { --shine-r: 147; --shine-g: 51; --shine-b: 234; }
+.envelope-shine-legendary { --shine-r: 245; --shine-g: 158; --shine-b: 11; }
+
+/* Global - LNY festive patterns (gold coins, soft gradients) - applied to all pages */
+.landing-pattern {
+  background-color: var(--bg-cream);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212, 175, 55, 0.12) 0%, transparent 60%),
+    radial-gradient(circle at 20% 80%, rgba(196, 30, 58, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(212, 175, 55, 0.08) 0%, transparent 35%),
+    url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='12' cy='12' r='1.5' fill='%23d4af37' fill-opacity='0.2'/%3E%3Ccircle cx='36' cy='24' r='1.5' fill='%23d4af37' fill-opacity='0.15'/%3E%3Ccircle cx='24' cy='36' r='1.5' fill='%23d4af37' fill-opacity='0.18'/%3E%3C/svg%3E");
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(2deg); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+.landing-float {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+.landing-twinkle {
+  animation: twinkle 2.5s ease-in-out infinite;
+}
+
+.landing-twinkle:nth-child(odd) {
+  animation-duration: 3s;
+}
+
+/* Hide scrollbar, keep scroll via drag */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

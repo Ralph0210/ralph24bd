@@ -15,7 +15,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center font-medium rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center font-medium rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden";
   const variants = {
     primary:
       "bg-[#c41e3a] text-white hover:bg-[#9e1830] active:scale-[0.98]",
@@ -35,7 +35,16 @@ export function Button({
       className={`${base} ${variants[variant]} ${sizes[size]} ${fullWidth ? "w-full" : ""} ${className}`}
       {...props}
     >
-      {children}
+      <span
+        className="absolute inset-0 pointer-events-none animate-envelope-shine"
+        style={{
+          background: `radial-gradient(circle at 30% 30%, rgba(212,175,55,0.4) 0%, transparent 50%),
+            radial-gradient(circle at 70% 70%, rgba(212,175,55,0.3) 0%, transparent 40%),
+            radial-gradient(circle at 50% 50%, rgba(212,175,55,0.25) 0%, transparent 60%)`,
+        }}
+        aria-hidden
+      />
+      <span className="relative z-10">{children}</span>
     </button>
   );
 }

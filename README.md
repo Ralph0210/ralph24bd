@@ -50,15 +50,22 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/dashboard/frens` | Zodiac buddies, everyone's signs |
 | `/admin` | Host only: Ralph's drink tally, all messages |
 
-### Prizes (TBD)
+### Prizes
 
-Add prize types in Supabase:
+Add prize types in **Supabase SQL Editor**:
 
 ```sql
-insert into prize_types (label, quantity) values
-  ('Good luck', 10),
-  ('Fortune cookie', 5),
-  -- add more...
+insert into prize_types (label, quantity, microcopy, rarity) values
+  ('Prize name', 10, 'Microcopy shown at reveal', 'Common'),
+  ('Another prize', 5, 'Microcopy here', 'Rare'),
+  ('Special prize', 2, null, 'Legendary');
 ```
 
-Win rates are calculated automatically. If no prize_types exist, placeholder prizes are used.
+- `label`: Prize name shown on the reveal card
+- `quantity`: How many exist (win rate calculated from this)
+- `microcopy`: Optional text below the prize when revealed
+- `rarity`: Optional tier, e.g. `Common`, `Rare`, `Legendary`, `Epic` — shown as a badge
+
+**If you already ran the schema**, run `supabase/migrations/add_prize_microcopy.sql` to add microcopy + rarity columns.
+
+If no prize_types exist, placeholder prizes are used.

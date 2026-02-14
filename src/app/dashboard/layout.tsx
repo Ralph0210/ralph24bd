@@ -19,14 +19,14 @@ export default function DashboardLayout({
 
   if (!guestId) {
     return (
-      <div className="min-h-dvh bg-[#fef8f0] flex items-center justify-center px-6">
+      <div className="min-h-dvh flex items-center justify-center px-6">
         <p className="text-[#5c4033]">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-dvh bg-[#fef8f0] flex flex-col pb-20">
+    <div className="min-h-dvh flex flex-col pb-20">
       <main className="flex-1 px-4 py-6">{children}</main>
       <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-[#e8ddd0] flex items-center justify-around safe-area-pb">
         <Link

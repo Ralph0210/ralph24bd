@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { getGuestId } from "@/lib/guest-id";
+import { getZodiacEmoji } from "@/lib/chinese-zodiac";
 import { createClient } from "@/lib/supabase/client";
 
 type Guest = { name: string; zodiac_sign: string | null };
@@ -60,14 +61,21 @@ export default function FrensPage() {
       <Card>
         <p className="text-sm text-[#8b7355] mb-1">Your zodiac</p>
         <p className="text-xl font-bold text-[#c41e3a]">
-          {myZodiac ? `Year of the ${myZodiac}` : "—"}
+          {myZodiac ? (
+            <>
+              <span className="text-2xl mr-2">{getZodiacEmoji(myZodiac)}</span>
+              Year of the {myZodiac}
+            </>
+          ) : (
+            "—"
+          )}
         </p>
       </Card>
 
       {myZodiac && zodiacBuddies.length > 0 && (
         <Card>
           <p className="text-sm text-[#8b7355] mb-2">
-            Zodiac buddies ({myZodiac})
+            Zodiac buddies ({getZodiacEmoji(myZodiac)} {myZodiac})
           </p>
           <ul className="space-y-1">
             {zodiacBuddies.map((b, i) => (
@@ -83,10 +91,17 @@ export default function FrensPage() {
         <p className="text-sm text-[#8b7355] mb-2">Everyone&apos;s zodiac</p>
         <ul className="space-y-2 max-h-60 overflow-y-auto">
           {allGuests.map((g, i) => (
-            <li key={i} className="flex justify-between text-sm">
+            <li key={i} className="flex justify-between items-center text-sm gap-2">
               <span className="font-medium text-[#1a0f0a]">{g.name}</span>
               <span className="text-[#5c4033]">
-                {g.zodiac_sign ? g.zodiac_sign : "—"}
+                {g.zodiac_sign ? (
+                  <>
+                    <span className="text-base">{getZodiacEmoji(g.zodiac_sign)}</span>{" "}
+                    {g.zodiac_sign}
+                  </>
+                ) : (
+                  "—"
+                )}
               </span>
             </li>
           ))}

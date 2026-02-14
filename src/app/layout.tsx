@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geist.variable} font-sans antialiased min-h-dvh`}>
+      <body className={`${geist.variable} font-sans antialiased min-h-dvh landing-pattern`}>
         {children}
       </body>
     </html>

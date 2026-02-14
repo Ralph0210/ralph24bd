@@ -57,10 +57,10 @@ export default function NameAndMessagePage() {
   }
 
   return (
-    <div className="min-h-dvh bg-[#fef8f0] px-6 py-10">
+    <div className="min-h-dvh px-6 py-10">
       <div className="max-w-sm mx-auto">
         <h1 className="text-2xl font-bold text-[#1a0f0a] mb-6">
-          Introduce yourself
+          Welcome!
         </h1>
         <Card className="mb-6">
           <label className="block text-sm font-medium text-[#5c4033] mb-2">
@@ -74,7 +74,7 @@ export default function NameAndMessagePage() {
             className="w-full h-12 px-4 rounded-xl border border-[#e8ddd0] bg-white text-[#1a0f0a] placeholder:text-[#8b7355] focus:outline-none focus:ring-2 focus:ring-[#c41e3a]/30 mb-4"
           />
           <label className="block text-sm font-medium text-[#5c4033] mb-2">
-            Message to Ralph (optional)
+            Message to Ralph
           </label>
           <textarea
             value={message}
