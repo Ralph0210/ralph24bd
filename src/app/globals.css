@@ -1,19 +1,44 @@
 @import "tailwindcss";
 
 :root {
-  /* LNY / Birthday theme */
+  /* Apple-inspired spacing (8pt grid) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Corner radius - continuous/smooth feel */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+
+  /* LNY / Birthday theme - refined */
   --red-primary: #c41e3a;
   --red-dark: #9e1830;
   --gold: #d4af37;
   --gold-light: #f4e4a6;
   --bg-cream: #fef8f0;
+  --bg-elevated: rgba(255, 255, 255, 0.72);
   --bg-dark: #1a0f0a;
   --text-primary: #1a0f0a;
   --text-secondary: #5c4033;
-  --text-muted: #8b7355;
+  --text-tertiary: #8b7355;
+  --text-quaternary: #a89080;
+  --separator: rgba(0, 0, 0, 0.08);
   --white: #ffffff;
   --background: var(--bg-cream);
   --foreground: var(--text-primary);
+
+  /* Elevation - Apple-style subtle */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 @theme inline {
@@ -21,6 +46,19 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-nunito);
+}
+
+.font-display {
+  font-family: var(--font-nunito), system-ui, sans-serif;
+}
+
+/* Apple-style transitions */
+.transition-apple {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.transition-apple-spring {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 body {
@@ -28,72 +66,323 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
   min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Type scale - Apple-inspired hierarchy */
+.text-large-title {
+  font-size: 2.125rem;
+  font-weight: 700;
+  letter-spacing: 0.004em;
+  line-height: 1.15;
+}
+.text-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: 0.007em;
+  line-height: 1.2;
+}
+.text-headline {
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+.text-body {
+  font-size: 1.0625rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.45;
+}
+.text-callout {
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+.text-subhead {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+.text-footnote {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+.text-caption {
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
 }
 
 /* Design tokens - use in components */
-.bg-red-primary { background-color: var(--red-primary); }
-.bg-gold { background-color: var(--gold); }
-.text-gold { color: var(--gold); }
+.bg-red-primary {
+  background-color: var(--red-primary);
+}
+.bg-gold {
+  background-color: var(--gold);
+}
+.text-gold {
+  color: var(--gold);
+}
 
 /* Envelope reveal animations */
 @keyframes envelope-shine {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.3); }
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
 }
 
+/* Card emerges from inside the opened envelope - Apple-style satisfying settle */
 @keyframes card-pull-out {
-  0% { transform: translateY(80%) scale(0.85); opacity: 0; }
-  70% { transform: translateY(-5%) scale(1.02); opacity: 1; }
-  100% { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-@keyframes envelope-enlarge-slide {
-  0% { transform: scale(1) translateY(0); }
-  40% { transform: scale(1.15) translateY(0); }
-  100% { transform: scale(1.15) translateY(56px); }
+  0% {
+    transform: translateY(75%) scale(0.94);
+    opacity: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  }
+  72% {
+    transform: translateY(-3%) scale(1.03);
+    opacity: 1;
+    box-shadow:
+      0 12px 32px rgba(0, 0, 0, 0.1),
+      0 20px 56px rgba(196, 30, 58, 0.12);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.06),
+      0 12px 32px rgba(0, 0, 0, 0.05);
+  }
 }
 
 .animate-card-pull-out {
-  animation: card-pull-out 0.65s ease-out 0.2s forwards;
+  animation: card-pull-out 0.75s cubic-bezier(0.34, 1.35, 0.64, 1) 1.05s both;
+}
+
+/* Prize card arrival shine - Apple-style sweep when card lands */
+@keyframes prize-arrival-shine {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes prize-shine-sweep {
+  0% {
+    background-position: -90% 50%;
+  }
+  100% {
+    background-position: 190% 50%;
+  }
+}
+
+.animate-prize-arrival-shine {
+  animation:
+    prize-arrival-shine 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.2s forwards,
+    prize-shine-sweep 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.2s forwards;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 30%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0.2) 70%,
+    transparent 100%
+  );
+  background-size: 70% 100%;
+  background-repeat: no-repeat;
+}
+
+/* Envelope arrives as rectangle, then triangle flap slowly opens (clip-path morph) */
+@keyframes envelope-arrive {
+  0% {
+    transform: scale(0.55) translateY(20%);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Triangle flap grows upward from bottom (scaleY 0→1, origin bottom) */
+@keyframes envelope-flap-grow-up {
+  0% {
+    transform: scaleY(0);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+.animate-envelope-arrive {
+  animation: envelope-arrive 0.6s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.animate-envelope-flap-grow {
+  animation: envelope-flap-grow-up 0.85s cubic-bezier(0.25, 0.46, 0.45, 0.94)
+    0.6s both;
+  transform-origin: center bottom;
+}
+
+/* Fold line appears when flap is open */
+.animate-envelope-flap-line {
+  animation: envelope-flap-line 0.4s ease-out 1.35s forwards;
+  opacity: 0;
+}
+
+@keyframes envelope-flap-line {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Prize card - Apple iPhone design */
+.prize-card-apple {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-radius: 20px;
+  border: 0.5px solid rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.03),
+    0 6px 16px rgba(0, 0, 0, 0.06),
+    0 12px 32px rgba(0, 0, 0, 0.04);
 }
 
 .animate-envelope-reveal {
-  animation: envelope-enlarge-slide 0.6s ease-out forwards;
+  animation: envelope-enlarge-slide 0.65s cubic-bezier(0.34, 1.56, 0.64, 1)
+    forwards;
+}
+
+/* Envelope tap press effect */
+@keyframes envelope-press {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-envelope-press {
+  animation: envelope-press 0.2s ease-out;
 }
 
 /* Rarity page backgrounds */
-.bg-rarity-common { background-color: #fef8f0; }
-.bg-rarity-rare { background: linear-gradient(180deg, #eff6ff 0%, #fef8f0 100%); }
-.bg-rarity-epic { background: linear-gradient(180deg, #faf5ff 0%, #fef8f0 100%); }
-.bg-rarity-legendary { background: linear-gradient(180deg, #fffbeb 0%, #fef8f0 100%); }
+.bg-rarity-common {
+  background-color: #fef8f0;
+}
+.bg-rarity-rare {
+  background: linear-gradient(180deg, #eff6ff 0%, #fef8f0 100%);
+}
+.bg-rarity-epic {
+  background: linear-gradient(180deg, #faf5ff 0%, #fef8f0 100%);
+}
+.bg-rarity-legendary {
+  background: linear-gradient(180deg, #fffbeb 0%, #fef8f0 100%);
+}
 
 .animate-envelope-shine {
   animation: envelope-shine 2s ease-in-out infinite;
 }
 
-.envelope-shine-common { --shine-r: 212; --shine-g: 175; --shine-b: 55; }
-.envelope-shine-rare { --shine-r: 59; --shine-g: 130; --shine-b: 246; }
-.envelope-shine-epic { --shine-r: 147; --shine-g: 51; --shine-b: 234; }
-.envelope-shine-legendary { --shine-r: 245; --shine-g: 158; --shine-b: 11; }
+.envelope-shine-common {
+  --shine-r: 212;
+  --shine-g: 175;
+  --shine-b: 55;
+}
+.envelope-shine-rare {
+  --shine-r: 59;
+  --shine-g: 130;
+  --shine-b: 246;
+}
+.envelope-shine-epic {
+  --shine-r: 147;
+  --shine-g: 51;
+  --shine-b: 234;
+}
+.envelope-shine-legendary {
+  --shine-r: 245;
+  --shine-g: 158;
+  --shine-b: 11;
+}
+
+/* Envelope shape - 紅包 opened (triangle flap pointing upward, like unfolded) */
+.envelope-shape {
+  clip-path: polygon(0 20%, 50% 0, 100% 20%, 100% 100%, 0 100%);
+}
 
 /* Global - LNY festive patterns (gold coins, soft gradients) - applied to all pages */
 .landing-pattern {
   background-color: var(--bg-cream);
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(212, 175, 55, 0.12) 0%, transparent 60%),
-    radial-gradient(circle at 20% 80%, rgba(196, 30, 58, 0.06) 0%, transparent 40%),
-    radial-gradient(circle at 85% 20%, rgba(212, 175, 55, 0.08) 0%, transparent 35%),
+    radial-gradient(
+      ellipse 80% 50% at 50% 0%,
+      rgba(212, 175, 55, 0.12) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 20% 80%,
+      rgba(196, 30, 58, 0.06) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 85% 20%,
+      rgba(212, 175, 55, 0.08) 0%,
+      transparent 35%
+    ),
     url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='12' cy='12' r='1.5' fill='%23d4af37' fill-opacity='0.2'/%3E%3Ccircle cx='36' cy='24' r='1.5' fill='%23d4af37' fill-opacity='0.15'/%3E%3Ccircle cx='24' cy='36' r='1.5' fill='%23d4af37' fill-opacity='0.18'/%3E%3C/svg%3E");
 }
 
 @keyframes float-gentle {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-6px) rotate(2deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(2deg);
+  }
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
 }
 
 .landing-float {
@@ -108,6 +397,247 @@ body {
   animation-duration: 3s;
 }
 
+/* Input fields - Apple refinement */
+input,
+textarea {
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+input:focus,
+textarea:focus {
+  outline: none;
+}
+
+/* Safe area for notched devices */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Mobile-first touch feedback */
+@media (hover: none) and (pointer: coarse) {
+  button,
+  a,
+  [role="button"],
+  input[type="submit"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+}
+
+/* Page content entrance */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-fade-in-up-delay-1 {
+  animation-delay: 0.06s;
+  opacity: 0;
+}
+.animate-fade-in-up-delay-2 {
+  animation-delay: 0.12s;
+  opacity: 0;
+}
+.animate-fade-in-up-delay-3 {
+  animation-delay: 0.18s;
+  opacity: 0;
+}
+.animate-fade-in-up-delay-4 {
+  animation-delay: 0.24s;
+  opacity: 0;
+}
+
+/* Card press - Apple-style tap feedback (soft spring) */
+.tap-scale {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tap-scale:active {
+  transform: scale(0.985);
+}
+
+/* Staggered list item entrance */
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in-right 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Drink counter odometer - Apple-style roll (old exits up, new enters from below) */
+@keyframes drink-counter-out {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-140%);
+    opacity: 0.3;
+  }
+}
+
+@keyframes drink-counter-in {
+  from {
+    transform: translateY(140%);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-drink-counter-out {
+  animation: drink-counter-out 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.animate-drink-counter-in {
+  animation: drink-counter-in 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* Zodiac / prize reveal pop */
+@keyframes pop-in {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.animate-pop-in {
+  animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Prize modal staggered reveal */
+.animate-prize-stagger-1 {
+  animation: fade-in-up 0.4s cubic-bezier(0.32, 0.72, 0, 1) 0.1s forwards;
+  opacity: 0;
+}
+.animate-prize-stagger-2 {
+  animation: fade-in-up 0.4s cubic-bezier(0.32, 0.72, 0, 1) 0.2s forwards;
+  opacity: 0;
+}
+.animate-prize-stagger-3 {
+  animation: fade-in-up 0.4s cubic-bezier(0.32, 0.72, 0, 1) 0.3s forwards;
+  opacity: 0;
+}
+.animate-prize-stagger-4 {
+  animation: fade-in-up 0.4s cubic-bezier(0.32, 0.72, 0, 1) 0.4s forwards;
+  opacity: 0;
+}
+
+/* Skeleton loading pulse */
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-skeleton {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* Form error - gentle shake */
+@keyframes shake-gentle {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+.animate-shake {
+  animation: shake-gentle 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Page content wrap - soft mount for route changes */
+@keyframes page-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-page-enter {
+  animation: page-enter 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* Nav tab active pill - subtle fill-in */
+@keyframes nav-pill-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.nav-pill-active {
+  animation: nav-pill-in 0.35s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* Bottom sheet backdrop */
+@keyframes sheet-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-sheet-backdrop-in {
+  animation: sheet-backdrop-in 0.25s ease-out forwards;
+}
+
+@keyframes slide-up-sheet {
+  from {
+    transform: translateY(100%);
+    opacity: 0.98;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-slide-up-sheet {
+  animation: slide-up-sheet 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+/* Expand/collapse with height - grid-based for smooth height */
+.expandable-section {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.expandable-section.expanded {
+  grid-template-rows: 1fr;
+}
+.expandable-section-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
 /* Hide scrollbar, keep scroll via drag */
 .scrollbar-hide {
   -ms-overflow-style: none;
@@ -115,4 +645,49 @@ body {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Landing page - envelope bounce + glow */
+@keyframes envelope-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  25% { transform: translateY(-8px) scale(1.02); }
+  50% { transform: translateY(-4px) scale(0.98); }
+  75% { transform: translateY(-10px) scale(1.01); }
+}
+@keyframes envelope-glow {
+  0%, 100% { filter: drop-shadow(0 8px 24px rgba(196, 30, 58, 0.2)); }
+  50% { filter: drop-shadow(0 12px 32px rgba(196, 30, 58, 0.35)); }
+}
+@keyframes title-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes coin-spin {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-12px) rotate(2deg); }
+}
+.animate-envelope-bounce {
+  animation: envelope-bounce 3s ease-in-out infinite;
+}
+.animate-envelope-glow {
+  animation: envelope-glow 2.5s ease-in-out infinite;
+}
+.animate-title-shimmer {
+  background: linear-gradient(
+    90deg,
+    #1a0f0a 0%,
+    #1a0f0a 35%,
+    #d4af37 50%,
+    #1a0f0a 65%,
+    #1a0f0a 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: title-shimmer 4s linear infinite;
 }

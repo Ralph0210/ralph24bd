@@ -6,6 +6,7 @@ create table if not exists guests (
   id uuid primary key default gen_random_uuid(),
   guest_id text unique not null,  -- client-generated, stored in localStorage for session recovery
   name text not null,
+  avatar_url text,  -- optional profile photo (Supabase Storage avatars bucket)
   message_to_ralph text,
   birth_year int,
   zodiac_sign text,
@@ -14,6 +15,15 @@ create table if not exists guests (
   checked_in_at timestamptz default now(),
   created_at timestamptz default now(),
   updated_at timestamptz default now()
+);
+
+-- Posts: guest messages with optional photos (for dashboard feed)
+create table if not exists posts (
+  id uuid primary key default gen_random_uuid(),
+  guest_id text not null references guests(guest_id) on delete cascade,
+  message text not null,
+  photo_urls text[] default '{}',
+  created_at timestamptz default now()
 );
 
 -- Party-global: Ralph's drink tally (host-only updates)
@@ -58,5 +68,27 @@ alter table prize_picks enable row level security;
 -- In production, you may want stricter policies
 create policy "Allow all on guests" on guests for all using (true) with check (true);
 create policy "Allow all on prize_picks" on prize_picks for all using (true) with check (true);
+alter table posts enable row level security;
+create policy "Allow all on posts" on posts for all using (true) with check (true);
+
+create table if not exists post_likes (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references posts(id) on delete cascade,
+  guest_id text not null,
+  created_at timestamptz default now(),
+  unique(post_id, guest_id)
+);
+create table if not exists post_comments (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references posts(id) on delete cascade,
+  guest_id text not null,
+  message text not null,
+  created_at timestamptz default now()
+);
+alter table post_likes enable row level security;
+alter table post_comments enable row level security;
+create policy "Allow all on post_likes" on post_likes for all using (true) with check (true);
+create policy "Allow all on post_comments" on post_comments for all using (true) with check (true);
+
 create policy "Allow all on prize_types" on prize_types for all using (true) with check (true);
 create policy "Allow all on party_state" on party_state for all using (true) with check (true);

@@ -18,7 +18,7 @@ export function Card({
   };
   return (
     <div
-      className={`rounded-2xl bg-white border border-[#e8ddd0] shadow-sm ${paddingClass[padding]} ${className}`}
+      className={`rounded-[20px] bg-white/90 backdrop-blur-xl border border-[#e8ddd0]/80 shadow-[var(--shadow-md)] transition-shadow duration-300 [@media(hover:hover)]:hover:shadow-lg ${paddingClass[padding]} ${className}`}
       {...props}
     >
       {children}

@@ -49,18 +49,18 @@ export default function ZodiacPage() {
   }
 
   return (
-    <div className="min-h-dvh px-6 py-10">
+    <div className="min-h-dvh px-6 py-10 animate-page-enter">
       <div className="max-w-sm mx-auto text-center">
-        <h1 className="text-2xl font-bold text-[#1a0f0a] mb-6">
+        <h1 className="font-display text-title text-[#1a0f0a] mb-6 animate-fade-in-up">
           Your zodiac
         </h1>
         {!revealed ? (
           <>
-            <p className="text-[#5c4033] text-sm mb-4">
+            <p className="text-subhead text-[#5c4033] mb-4 animate-fade-in-up animate-fade-in-up-delay-1">
               Enter your birth year to reveal your Chinese zodiac sign!
             </p>
-            <Card className="mb-6">
-              <label className="block text-sm font-medium text-[#5c4033] mb-2">
+            <Card className={`mb-6 animate-fade-in-up animate-fade-in-up-delay-2 tap-scale ${error ? "animate-shake" : ""}`}>
+              <label className="block text-footnote font-medium text-[#5c4033] mb-2">
                 Birth year (optional)
               </label>
               <input
@@ -73,7 +73,7 @@ export default function ZodiacPage() {
                 placeholder="e.g. 2000"
                 min={1900}
                 max={2100}
-                className={`w-full h-12 px-4 rounded-xl border bg-white text-[#1a0f0a] placeholder:text-[#8b7355] focus:outline-none focus:ring-2 focus:ring-[#c41e3a]/30 ${error ? "border-[#c41e3a]" : "border-[#e8ddd0]"}`}
+                className={`w-full h-12 min-h-[44px] px-4 rounded-[14px] border bg-white/80 text-[#1a0f0a] placeholder:text-[#8b7355] focus:outline-none focus:ring-2 focus:ring-[#c41e3a]/25 focus:border-[#c41e3a]/40 transition-apple ${error ? "border-[#c41e3a]" : "border-[#e8ddd0]"}`}
               />
               {error && (
                 <p className="text-[#c41e3a] text-sm mt-2 text-left">{error}</p>
@@ -91,10 +91,10 @@ export default function ZodiacPage() {
           </>
         ) : (
           <>
-            <Card className="mb-6">
+            <Card className="mb-6 animate-fade-in-up tap-scale">
               {zodiac ? (
                 <>
-                  <p className="text-8xl mb-2">{getZodiacEmoji(zodiac)}</p>
+                  <p className="text-8xl mb-2 animate-pop-in">{getZodiacEmoji(zodiac)}</p>
                   <p className="text-2xl font-bold text-[#c41e3a]">
                     {zodiac}
                   </p>

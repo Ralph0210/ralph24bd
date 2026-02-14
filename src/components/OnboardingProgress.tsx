@@ -12,10 +12,14 @@ export function OnboardingProgress({ currentStep }: { currentStep: number }) {
         return (
           <div
             key={i}
-            className={`h-1.5 flex-1 max-w-16 rounded-full transition-colors ${
-              isDone || isActive ? "bg-[#c41e3a]" : "bg-[#e8ddd0]"
-            }`}
-          />
+            className="h-[4px] flex-1 max-w-16 rounded-full overflow-hidden bg-[#e8ddd0]"
+          >
+            <div
+              className={`h-full rounded-full bg-[#c41e3a] transition-[width] duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                isDone || isActive ? "w-full" : "w-0"
+              }`}
+            />
+          </div>
         );
       })}
     </div>

@@ -1,10 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Geist, Nunito } from "next/font/google";
 import "./globals.css";
+import { FestiveBackground } from "@/components/FestiveBackground";
 
 const geist = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+});
+
+const nunito = Nunito({
+  variable: "--font-nunito",
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -26,7 +33,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geist.variable} font-sans antialiased min-h-dvh landing-pattern`}>
+      <body className={`${geist.variable} ${nunito.variable} font-sans antialiased min-h-dvh landing-pattern`}>
+        <FestiveBackground />
         {children}
       </body>
     </html>

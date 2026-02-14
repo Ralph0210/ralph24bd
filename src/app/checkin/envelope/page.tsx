@@ -73,11 +73,18 @@ const RARITY_ORDER: Record<string, number> = {
 
 function rarityColor(rarity: string): string {
   const r = rarity.toLowerCase()
-  if (r === "legendary")
-    return "bg-amber-400/30 text-amber-800 border-amber-400/50"
-  if (r === "rare") return "bg-blue-100 text-blue-800 border-blue-200"
-  if (r === "epic") return "bg-purple-100 text-purple-800 border-purple-200"
-  return "bg-[#e8ddd0] text-[#5c4033] border-[#d4c4b0]"
+  if (r === "legendary") return "bg-amber-500/12 text-amber-700"
+  if (r === "rare") return "bg-blue-500/12 text-blue-700"
+  if (r === "epic") return "bg-purple-500/12 text-purple-700"
+  return "bg-black/[0.06] text-[#5c4033]"
+}
+
+function rarityBadgeApple(rarity: string): string {
+  const r = rarity.toLowerCase()
+  if (r === "legendary") return "bg-amber-500/15 text-amber-800"
+  if (r === "rare") return "bg-blue-500/15 text-blue-800"
+  if (r === "epic") return "bg-purple-500/15 text-purple-800"
+  return "bg-black/[0.08] text-[#5c4033]"
 }
 
 function rarityShineClass(rarity: string | null): string {
@@ -101,26 +108,69 @@ function rarityBgClass(rarity: string | null): string {
 function fireFireworks(rarity: string | null) {
   const colors =
     rarity?.toLowerCase() === "legendary"
-      ? ["#f59e0b", "#fbbf24", "#fef3c7", "#fcd34d"]
+      ? ["#f59e0b", "#fbbf24", "#fcd34d", "#fef3c7", "#fde047", "#facc15"]
       : rarity?.toLowerCase() === "rare"
-        ? ["#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe"]
+        ? ["#2563eb", "#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe"]
         : rarity?.toLowerCase() === "epic"
-          ? ["#9333ea", "#a855f7", "#c084fc", "#e9d5ff"]
-          : ["#d4af37", "#f4e4a6", "#c41e3a", "#fef08a"]
-  const baseCount = rarity?.toLowerCase() === "legendary" ? 200 : 120
-  confetti({ particleCount: baseCount, spread: 100, origin: { y: 0.55 }, colors, startVelocity: 35 })
-  confetti({ particleCount: baseCount, spread: 100, origin: { y: 0.5 }, colors, startVelocity: 40, scalar: 1.2 })
+          ? ["#7c3aed", "#9333ea", "#a855f7", "#c084fc", "#e9d5ff"]
+          : ["#c41e3a", "#b91c1c", "#d4af37", "#fbbf24", "#f4e4a6", "#fef08a"]
+  const baseCount = rarity?.toLowerCase() === "legendary" ? 320 : 220
+  const scalar = rarity?.toLowerCase() === "legendary" ? 1.6 : 1.4
+
+  confetti({
+    particleCount: baseCount,
+    spread: 120,
+    origin: { y: 0.5 },
+    colors,
+    startVelocity: 42,
+    scalar,
+    drift: 0.7,
+    ticks: 300,
+  })
+  confetti({
+    particleCount: Math.floor(baseCount * 0.85),
+    spread: 110,
+    origin: { y: 0.45, x: 0.5 },
+    colors,
+    startVelocity: 48,
+    scalar: scalar * 1.05,
+    drift: 0.6,
+    ticks: 280,
+  })
   setTimeout(() => {
-    confetti({ particleCount: 80, angle: 60, spread: 70, origin: { x: 0.15 }, colors, startVelocity: 30 })
-    confetti({ particleCount: 80, angle: 120, spread: 70, origin: { x: 0.85 }, colors, startVelocity: 30 })
-  }, 100)
+    confetti({
+      particleCount: 120,
+      angle: 65,
+      spread: 70,
+      origin: { x: 0.15, y: 0.55 },
+      colors,
+      startVelocity: 36,
+      scalar,
+      ticks: 260,
+    })
+    confetti({
+      particleCount: 120,
+      angle: 115,
+      spread: 70,
+      origin: { x: 0.85, y: 0.55 },
+      colors,
+      startVelocity: 36,
+      scalar,
+      ticks: 260,
+    })
+  }, 80)
   setTimeout(() => {
-    confetti({ particleCount: 60, angle: 45, spread: 55, origin: { x: 0.3, y: 0.8 }, colors })
-    confetti({ particleCount: 60, angle: 135, spread: 55, origin: { x: 0.7, y: 0.8 }, colors })
-  }, 250)
-  setTimeout(() => {
-    confetti({ particleCount: 50, angle: 90, spread: 100, origin: { x: 0.5, y: 0.9 }, colors, startVelocity: 25 })
-  }, 400)
+    confetti({
+      particleCount: 100,
+      angle: 90,
+      spread: 100,
+      origin: { x: 0.5, y: 0.88 },
+      colors,
+      startVelocity: 32,
+      scalar,
+      ticks: 250,
+    })
+  }, 200)
 }
 
 const REVEALED_STORAGE_KEY = "ralph24_envelope_revealed"
@@ -221,12 +271,17 @@ export default function EnvelopePage() {
     return () => clearTimeout(id)
   }, [showBackWarning])
 
+  useEffect(() => {
+    if (!revealedPrize) return
+    const id = setTimeout(() => fireFireworks(revealedPrize.rarity), 1500)
+    return () => clearTimeout(id)
+  }, [revealedPrize])
+
   async function handlePick(index: number) {
     if (selectedIndex !== null) return
     setSelectedIndex(index)
     const prize = pool[index]
     setRevealedPrize(prize)
-    fireFireworks(prize.rarity)
 
     sessionStorage.setItem(REVEALED_STORAGE_KEY, JSON.stringify(prize))
 
@@ -323,19 +378,22 @@ export default function EnvelopePage() {
 
   if (loading || pool.length === 0) {
     return (
-      <div className="min-h-dvh flex items-center justify-center">
-        <p className="text-[#5c4033]">Loading...</p>
+      <div className="min-h-dvh px-6 py-10 max-w-sm mx-auto space-y-6">
+        <div className="h-9 w-40 rounded-[14px] bg-[#e8ddd0]/50 animate-skeleton" />
+        <div className="h-64 rounded-[20px] bg-[#e8ddd0]/40 animate-skeleton" />
+        <div className="h-16 rounded-[14px] bg-[#e8ddd0]/40 animate-skeleton w-3/4" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-dvh px-6 py-10 relative overflow-hidden">
+    <div className="min-h-dvh px-6 py-10 relative overflow-hidden animate-page-enter">
       {showBackWarning &&
         typeof document !== "undefined" &&
         createPortal(
           <div className="fixed top-4 left-4 right-4 z-[9999] bg-[#1a0f0a] text-white text-sm text-center py-3 px-4 rounded-xl shadow-lg mx-4">
-            Haha gotcha cheater! Use &quot;Back to party&quot; below to leave this page
+            Haha gotcha cheater! Use &quot;Back to party&quot; below to leave
+            this page
           </div>,
           document.body,
         )}
@@ -343,9 +401,10 @@ export default function EnvelopePage() {
         typeof document !== "undefined" &&
         createPortal(
           <div
-            className="fixed inset-0 z-[9998] flex items-center justify-center p-6"
+            className="fixed inset-0 z-[9998] flex flex-col items-center justify-center p-4 sm:p-6 overflow-y-auto overflow-x-hidden scrollbar-hide"
+            style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
             aria-modal
-            aria-labelledby="prize-modal-title"
+            aria-label="Prize revealed"
             role="dialog"
           >
             <div
@@ -359,52 +418,83 @@ export default function EnvelopePage() {
               }}
               aria-hidden
             />
-            <div className="relative z-10 w-full max-w-sm flex flex-col items-center">
-              <h2 id="prize-modal-title" className="text-2xl font-bold text-[#1a0f0a] mb-4 text-center">
-                Your prize
-              </h2>
-              <div className="relative w-52 h-48 sm:w-56 sm:h-52 shrink-0 animate-envelope-reveal -mt-24">
-                <div
-                  className={`absolute inset-0 rounded-xl bg-[#c41e3a] border-2 border-[#9e1830] flex flex-col items-center justify-center overflow-hidden ${revealedPrize.rarity?.toLowerCase() !== "rare" ? rarityShineClass(revealedPrize.rarity) : "envelope-shine-common"}`}
-                >
-                  <span className="text-white font-bold text-4xl z-10">福</span>
-                  <span className="text-white/90 font-medium text-sm z-10 mt-1">
-                    Good Fortune
-                  </span>
-                </div>
-              </div>
-              <div className="w-full max-w-xs -mt-8 relative z-10 animate-card-pull-out">
-                <Card className="text-center shadow-xl border-2 border-[#e8ddd0]">
+            <div className="relative z-10 w-full max-w-sm flex flex-col items-center flex-1 min-h-0 overflow-visible">
+              {/* Top spacer - larger to push prize card toward vertical center */}
+              <div className="flex-[2] min-h-[8vh] shrink-0" aria-hidden />
+              {/* Prize card - emerges from envelope after it opens */}
+              <div className="w-full aspect-[52/72] max-w-xs mx-auto relative z-10 animate-card-pull-out mb-3 flex-shrink-0 overflow-visible rounded-[20px]">
+                <div className="prize-card-apple h-full flex flex-col justify-center p-5 sm:p-6 text-center relative overflow-hidden">
+                  {/* Arrival shine - subtle sweep when card lands */}
+                  <div
+                    className="absolute inset-0 animate-prize-arrival-shine z-[1] rounded-[20px]"
+                    aria-hidden
+                  />
                   {revealedPrize.rarity && (
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-medium border mb-3 ${rarityColor(revealedPrize.rarity)}`}
+                      className={`inline-block px-3 py-1.5 rounded-[10px] text-[11px] font-semibold tracking-[0.02em] uppercase mb-4 animate-prize-stagger-2 w-fit mx-auto ${rarityBadgeApple(revealedPrize.rarity)}`}
                     >
                       {revealedPrize.rarity}
                     </span>
                   )}
-                  <p className="text-lg text-[#5c4033] mb-2">You got</p>
-                  <p className="text-2xl font-bold text-[#c41e3a]">
+                  <p className="text-subhead text-[#8b7355] mb-2 animate-prize-stagger-2 tracking-[-0.01em]">
+                    You got
+                  </p>
+                  <p className="text-headline sm:text-title font-bold text-[#c41e3a] mb-3 animate-prize-stagger-3 tracking-[-0.02em] leading-tight">
                     {revealedPrize.label}
                   </p>
                   {revealedPrize.microcopy && (
-                    <p className="text-sm text-[#8b7355] mt-3">
+                    <p className="text-footnote text-[#5c4033] leading-relaxed animate-prize-stagger-4">
                       {revealedPrize.microcopy}
                     </p>
                   )}
-                  <p className="text-xs text-[#c41e3a] font-medium mt-4">
+                  <p className="text-footnote text-[#c41e3a] font-medium mt-4 mb-5 animate-prize-stagger-4">
                     Show this to Ralph and claim your prize!
                   </p>
-                </Card>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    fullWidth
+                    className="animate-prize-stagger-4 min-h-[52px] shrink-0 rounded-[14px] font-semibold"
+                    onClick={handleGoToDashboard}
+                  >
+                    Back to party
+                  </Button>
+                </div>
               </div>
-              <Button
-                variant="primary"
-                size="lg"
-                fullWidth
-                className="mt-6"
-                onClick={handleGoToDashboard}
-              >
-                Back to party
-              </Button>
+
+              {/* Envelope: rectangle (static) + triangle on top grows downward */}
+              <div className="relative w-full aspect-[52/72] max-w-xs mx-auto shrink-0 animate-envelope-arrive z-10 -mt-20 overflow-hidden">
+                {/* Rectangle body - fixed size & position, never changes */}
+                <div
+                  className={`absolute left-0 right-0 top-[20%] bottom-0 rounded-b-[6px] bg-[#c41e3a] border-2 border-t-0 border-[#9e1830] flex flex-col items-center justify-center ${revealedPrize.rarity?.toLowerCase() !== "rare" ? rarityShineClass(revealedPrize.rarity) : "envelope-shine-common"}`}
+                >
+                  {/* Fold line where flap meets body - appears when open */}
+                  <div
+                    className="absolute left-0 right-0 top-0 h-px bg-[#9e1830]/40 z-[5] animate-envelope-flap-line pointer-events-none"
+                    aria-hidden
+                  />
+                  <span className="text-white font-bold text-3xl sm:text-4xl z-10">
+                    福
+                  </span>
+                  <span className="text-white/90 font-medium text-xs sm:text-sm z-10 mt-0.5">
+                    Good Fortune
+                  </span>
+                </div>
+                {/* Triangle flap - SVG path with smooth bezier curve at tip */}
+                <svg
+                  className={`absolute left-0 right-0 top-0 h-[20%] w-full animate-envelope-flap-grow`}
+                  viewBox="0 0 100 100"
+                  preserveAspectRatio="none"
+                  aria-hidden
+                >
+                  <path
+                    d="M 0 100 L 42 8 Q 50 0 58 8 L 100 100 Z"
+                    fill="#c41e3a"
+                  />
+                </svg>
+              </div>
+              {/* Bottom spacer - balances layout */}
+              <div className="flex-1 min-h-[8vh] shrink-0" aria-hidden />
             </div>
           </div>,
           document.body,
@@ -412,91 +502,100 @@ export default function EnvelopePage() {
       {/* Background layer - behind all content */}
       <div className="absolute inset-0 z-0" aria-hidden />
       {!revealedPrize && (
-      <div className="max-w-sm mx-auto relative z-10">
-        <h1 className="text-2xl font-bold text-[#1a0f0a] mb-6 text-center">
-          Pick a red envelope
-        </h1>
+        <div className="max-w-sm mx-auto relative z-10">
+          <h1 className="text-title text-[#1a0f0a] mb-6 text-center animate-fade-in-up">
+            Pick a red envelope
+          </h1>
+          <p className="text-subhead text-[#8b7355] text-center mb-4 animate-fade-in-up animate-fade-in-up-delay-1">
+            Swipe to browse · tap to pick
+          </p>
 
-        <>
-          <div
-            ref={scrollRef}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerLeave={handlePointerUp}
-            className="flex gap-4 overflow-x-auto overflow-y-hidden pb-4 -mx-2 scrollbar-hide snap-x snap-mandatory touch-pan-x cursor-grab active:cursor-grabbing select-none [contain:layout_paint]"
-          >
-            {pool.map((_, i) => (
-              <div
-                key={i}
-                data-envelope-index={i}
-                role="button"
-                tabIndex={0}
-                onClick={() => handlePick(i)}
-                onKeyDown={(e) => e.key === "Enter" && handlePick(i)}
-                className="shrink-0 w-52 h-72 sm:w-60 sm:h-80 rounded-xl border-2 border-[#9e1830] flex flex-col items-center justify-center text-white font-bold snap-center active:scale-[0.98] transition-transform shadow-lg overflow-hidden relative bg-[#c41e3a] envelope-shine-common cursor-pointer"
-                style={{ touchAction: "pan-x" }}
-              >
-                <span className="z-10 relative text-4xl">福</span>
-                <span className="z-10 relative text-sm font-medium mt-1">
-                  Good Fortune
-                </span>
+          <>
+            <div
+              ref={scrollRef}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerLeave={handlePointerUp}
+              className="flex gap-4 overflow-x-auto overflow-y-hidden pb-4 -mx-2 scrollbar-hide snap-x snap-mandatory touch-pan-x cursor-grab active:cursor-grabbing select-none [contain:layout_paint] animate-fade-in-up animate-fade-in-up-delay-2"
+            >
+              {pool.map((_, i) => (
                 <div
-                  className="absolute inset-0 pointer-events-none animate-envelope-shine"
-                  style={{
-                    background: `radial-gradient(circle at 30% 30%, rgba(212,175,55,0.5) 0%, transparent 50%),
+                  key={i}
+                  data-envelope-index={i}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handlePick(i)}
+                  onKeyDown={(e) => e.key === "Enter" && handlePick(i)}
+                  className="shrink-0 w-52 h-80 sm:w-60 sm:h-96 rounded-xl border-2 border-[#9e1830] flex flex-col items-center justify-center text-white font-bold snap-center active:scale-[0.96] transition-[transform] duration-150 ease-out shadow-lg overflow-hidden relative bg-[#c41e3a] envelope-shine-common cursor-pointer touch-manipulation"
+                  style={{ touchAction: "pan-x" }}
+                >
+                  <span className="z-10 relative text-4xl">福</span>
+                  <span className="z-10 relative text-sm font-medium mt-1">
+                    Good Fortune
+                  </span>
+                  <div
+                    className="absolute inset-0 pointer-events-none animate-envelope-shine"
+                    style={{
+                      background: `radial-gradient(circle at 30% 30%, rgba(212,175,55,0.5) 0%, transparent 50%),
                                   radial-gradient(circle at 70% 70%, rgba(212,175,55,0.4) 0%, transparent 40%),
                                   radial-gradient(circle at 50% 50%, rgba(212,175,55,0.3) 0%, transparent 60%)`,
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-          {winRates.length > 0 && (
-            <Card padding="sm" className="mt-6">
-              <button
-                onClick={() => setWinRatesExpanded(!winRatesExpanded)}
-                className="w-full flex items-center justify-between text-left"
-              >
-                <span className="text-xs font-medium text-[#8b7355]">
-                  Win rates
-                </span>
-                <span className="text-[#8b7355] text-sm">
-                  {winRatesExpanded ? "▼" : "▶"}
-                </span>
-              </button>
-              {winRatesExpanded && (
-                <div className="space-y-3 mt-3 pt-3 border-t border-[#e8ddd0]">
-                  {winRates.map((w) => (
-                    <div key={w.label} className="space-y-1">
-                      <div className="flex justify-between text-sm items-center gap-2">
-                        <span className="text-[#1a0f0a] font-medium truncate">
-                          {w.label}
-                        </span>
-                        {w.rarity && (
-                          <span
-                            className={`shrink-0 px-2 py-0.5 rounded text-xs ${rarityColor(w.rarity)}`}
-                          >
-                            {w.rarity}
-                          </span>
-                        )}
-                        <span className="font-medium shrink-0 text-[#c41e3a]">
-                          {w.rate}%
-                        </span>
-                      </div>
-                      {w.microcopy && (
-                        <p className="text-xs text-[#8b7355] pl-0">
-                          {w.microcopy}
-                        </p>
-                      )}
-                    </div>
-                  ))}
+                    }}
+                  />
                 </div>
-              )}
-            </Card>
-          )}
-        </>
-      </div>
+              ))}
+            </div>
+            {winRates.length > 0 && (
+              <Card padding="sm" className="mt-6">
+                <button
+                  onClick={() => setWinRatesExpanded(!winRatesExpanded)}
+                  className="w-full flex items-center justify-between text-left touch-manipulation min-h-[44px] -my-1 py-1"
+                >
+                  <span className="text-footnote font-medium text-[#8b7355]">
+                    Win rates
+                  </span>
+                  <span
+                    className={`text-[#8b7355] transition-transform duration-300 ${winRatesExpanded ? "rotate-90" : ""}`}
+                  >
+                    ▶
+                  </span>
+                </button>
+                <div
+                  className={`expandable-section ${winRatesExpanded ? "expanded" : ""}`}
+                >
+                  <div className="expandable-section-inner">
+                    <div className="space-y-3 mt-3 pt-3 border-t border-[#e8ddd0]">
+                      {winRates.map((w) => (
+                        <div key={w.label} className="space-y-1">
+                          <div className="flex justify-between text-sm items-center gap-2">
+                            <span className="text-[#1a0f0a] font-medium truncate">
+                              {w.label}
+                            </span>
+                            {w.rarity && (
+                              <span
+                                className={`shrink-0 px-2 py-0.5 rounded text-xs ${rarityColor(w.rarity)}`}
+                              >
+                                {w.rarity}
+                              </span>
+                            )}
+                            <span className="font-medium shrink-0 text-[#c41e3a]">
+                              {w.rate}%
+                            </span>
+                          </div>
+                          {w.microcopy && (
+                            <p className="text-xs text-[#8b7355] pl-0">
+                              {w.microcopy}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            )}
+          </>
+        </div>
       )}
     </div>
   )

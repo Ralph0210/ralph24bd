@@ -1,4 +1,5 @@
 const GUEST_ID_KEY = "ralph24_guest_id";
+export const ADMIN_GUEST_ID = "admin-host";
 
 export function getOrCreateGuestId(): string {
   if (typeof window === "undefined") return "";
@@ -13,4 +14,8 @@ export function getOrCreateGuestId(): string {
 export function getGuestId(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem(GUEST_ID_KEY);
+}
+
+export function getAdminGuestId(): string {
+  return ADMIN_GUEST_ID;
 }
