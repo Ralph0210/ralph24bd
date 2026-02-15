@@ -43,7 +43,6 @@ export default function AdminPage() {
   const [profileSaved, setProfileSaved] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [clearing, setClearing] = useState(false);
   const [postSheetOpen, setPostSheetOpen] = useState(false);
   const adminGuestId = getAdminGuestId();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -286,26 +285,6 @@ export default function AdminPage() {
     setSaving(false);
   }
 
-  async function clearAllGuestData() {
-    if (!confirm("Delete all guests, prize picks, posts, and reset Ralph's drinks? This cannot be undone.")) return;
-    setClearing(true);
-    const supabase = createClient();
-    await supabase.from("post_comments").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase.from("post_likes").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase.from("posts").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase.from("poll_votes").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase.from("poll_options").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase.from("polls").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase.from("prize_picks").delete().neq("id", "00000000-0000-0000-0000-000000000000");
-    await supabase.from("guests").delete().neq("guest_id", "");
-    await supabase.from("party_state").update({ ralph_drink_count: 0, updated_at: new Date().toISOString() }).neq("id", "00000000-0000-0000-0000-000000000000");
-    setRalphDrinks(0);
-    setMessages([]);
-    setCheckedInGuests([]);
-    setFeedItems([]);
-    setClearing(false);
-  }
-
   if (loading) {
     return (
       <div className="min-h-dvh px-6 py-10 max-w-lg mx-auto space-y-6">
@@ -324,16 +303,6 @@ export default function AdminPage() {
       <p className="text-subhead text-[#8b7355] mb-6 animate-fade-in-up animate-fade-in-up-delay-1">
         /admin — hidden URL
       </p>
-
-      <Button
-        variant="outline"
-        size="sm"
-        className="mb-6"
-        onClick={clearAllGuestData}
-        disabled={clearing}
-      >
-        {clearing ? "Clearing..." : "Clear all guest data (for testing)"}
-      </Button>
 
       <Card className="mb-6 animate-fade-in-up animate-fade-in-up-delay-2 tap-scale">
         <p className="text-footnote text-[#8b7355] mb-3">Your profile (shown when you comment)</p>
