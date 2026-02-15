@@ -5,7 +5,14 @@ import Link from "next/link"
 import { Card } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Avatar } from "@/components/ui/Avatar"
-import { Wine, Mail, Trophy, MessageCircle, ChevronRight, Pencil } from "lucide-react"
+import {
+  Wine,
+  Mail,
+  Trophy,
+  MessageCircle,
+  ChevronRight,
+  Pencil,
+} from "lucide-react"
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter"
 import { PostCard, type PostWithMeta } from "@/components/PostCard"
 import { PollCard, type PollWithMeta } from "@/components/PollCard"
@@ -229,7 +236,10 @@ export default function DashboardHomePage() {
           supabase
             .from("guests")
             .select("guest_id, name, avatar_url")
-            .in("guest_id", pollsData.map((p) => p.guest_id)),
+            .in(
+              "guest_id",
+              pollsData.map((p) => p.guest_id),
+            ),
         ])
         const optionsList = (optsRes.data || []) as {
           id: string

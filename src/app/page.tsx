@@ -1,58 +1,22 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/Button"
-import { LandingEnvelope } from "@/components/LandingEnvelope"
+import dynamic from "next/dynamic"
+import { useState } from "react"
 import { Countdown } from "@/components/Countdown"
-import { HostFeed } from "@/components/HostFeed"
-import { getOrCreateGuestId } from "@/lib/guest-id"
-import { createClient } from "@/lib/supabase/client"
 import { isPartyStarted } from "@/lib/party-start"
-import confetti from "canvas-confetti"
+
+const PartyStartedContent = dynamic(
+  () => import("@/components/PartyStartedContent").then((m) => ({ default: m.PartyStartedContent })),
+  { ssr: false }
+)
+
+const HostFeed = dynamic(
+  () => import("@/components/HostFeed").then((m) => ({ default: m.HostFeed })),
+  { ssr: false, loading: () => <div className="w-full mt-8 h-24 rounded-2xl bg-white/40 animate-pulse" /> }
+)
 
 export default function LandingPage() {
-  const router = useRouter()
   const [configError, setConfigError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!isPartyStarted()) return
-    const guestId = getOrCreateGuestId()
-    if (!guestId) return
-    try {
-      const supabase = createClient()
-      supabase
-        .from("guests")
-        .select("envelope_picks_used")
-        .eq("guest_id", guestId)
-        .single()
-        .then(({ data }) => {
-          if (data) {
-            const used =
-              (data as { envelope_picks_used: number }).envelope_picks_used ?? 0
-            router.replace(used > 0 ? "/dashboard" : "/checkin/envelope")
-          }
-        })
-    } catch {
-      queueMicrotask(() => setConfigError("Supabase not configured."))
-    }
-  }, [router])
-
-  function fireConfetti() {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ["#c41e3a", "#d4af37", "#fef8f0"],
-    })
-  }
-
-  function handleCheckIn() {
-    fireConfetti()
-    getOrCreateGuestId()
-    router.push("/checkin/name")
-  }
-
   const partyStarted = isPartyStarted()
 
   return (
@@ -99,45 +63,7 @@ export default function LandingPage() {
         </div>
 
         {partyStarted ? (
-          <>
-            {/* Hero envelope - tappable */}
-            <button
-              type="button"
-              onClick={handleCheckIn}
-              className="mb-6 animate-envelope-bounce animate-envelope-glow cursor-pointer touch-manipulation active:scale-95 transition-transform focus:outline-none focus:ring-4 focus:ring-[#c41e3a]/25 rounded-2xl"
-              aria-label="Check in to get your red envelope"
-            >
-              <LandingEnvelope className="drop-shadow-xl" />
-            </button>
-
-            <p className="text-caption text-[#8b7355]/90 mb-6 animate-fade-in-up animate-fade-in-up-delay-1">
-              Your red envelope awaits
-            </p>
-
-            {/* Glass card CTA */}
-            <div className="w-full animate-fade-in-up animate-fade-in-up-delay-2">
-              <div className="rounded-[24px] bg-white/65 backdrop-blur-xl border border-white/80 p-6 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
-                <h1 className="font-display text-[1.75rem] font-bold text-[#1a0f0a] text-center mb-2 tracking-tight">
-                  Ralph&apos;s 24th
-                </h1>
-                <p className="font-display text-headline text-[#c41e3a] text-center mb-4">
-                  Birthday + Lunar New Year
-                </p>
-                <p className="text-body text-[#5c4033] text-center mb-6">
-                  Check in to claim your free red envelope and join the party!
-                </p>
-                <Button
-                  variant="primary"
-                  size="lg"
-                  fullWidth
-                  onClick={handleCheckIn}
-                  className="shadow-[0_4px_20px_rgba(196,30,58,0.3)]"
-                >
-                  Check In
-                </Button>
-              </div>
-            </div>
-          </>
+          <PartyStartedContent onConfigError={setConfigError} />
         ) : (
           /* Countdown before party */
           <>
@@ -161,6 +87,10 @@ export default function LandingPage() {
                   </a>
                 </p>
                 <Countdown />
+                <p className="text-footnote text-[#5c4033] text-center mt-6 pt-6 border-t border-[#e8ddd0]/60">
+                  Joining remotely? When the party starts, check in to claim
+                  your free red envelope prize.
+                </p>
               </div>
             </div>
             <HostFeed />

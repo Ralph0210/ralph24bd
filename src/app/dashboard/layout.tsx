@@ -1,20 +1,20 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { getGuestId } from "@/lib/guest-id";
-import { isPartyStarted } from "@/lib/party-start";
-import { createClient } from "@/lib/supabase/client";
-import { HomeIcon, UserGroupIcon } from "@heroicons/react/24/solid";
-import { Wine, PenSquare } from "lucide-react";
-import { CreateContentSheet } from "@/components/CreateContentSheet";
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
+import { getGuestId } from "@/lib/guest-id"
+import { isPartyStarted } from "@/lib/party-start"
+import { createClient } from "@/lib/supabase/client"
+import { HomeIcon, UserGroupIcon } from "@heroicons/react/24/solid"
+import { Wine, PenSquare } from "lucide-react"
+import { CreateContentSheet } from "@/components/CreateContentSheet"
 
 const TABS = [
   { href: "/dashboard", label: "Home", Icon: HomeIcon },
   { href: "/dashboard/drinks", label: "Drinks", Icon: Wine },
   { href: "/dashboard/frens", label: "Frens", Icon: UserGroupIcon },
-] as const;
+] as const
 
 const CONVERSATION_STARTERS_BASE = [
   "How do you know Ralph?",
@@ -24,40 +24,40 @@ const CONVERSATION_STARTERS_BASE = [
   "Seen anyone else here before?",
   "What would you wish for in your red envelope?",
   "Best birthday party you've been to?",
-];
+]
 
 function getConversationStarters(myZodiac: string | null): string[] {
   const first = myZodiac
     ? `What's your zodiac sign? I'm Year of the ${myZodiac}!`
-    : "What's your zodiac sign?";
-  return [first, ...CONVERSATION_STARTERS_BASE];
+    : "What's your zodiac sign?"
+  return [first, ...CONVERSATION_STARTERS_BASE]
 }
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const [guestId, setGuestId] = useState<string | null>(null);
-  const [myZodiac, setMyZodiac] = useState<string | null>(null);
-  const [guestName, setGuestName] = useState<string>("");
-  const [guestAvatar, setGuestAvatar] = useState<string | null>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const [postSheetOpen, setPostSheetOpen] = useState(false);
+  const pathname = usePathname()
+  const router = useRouter()
+  const [guestId, setGuestId] = useState<string | null>(null)
+  const [myZodiac, setMyZodiac] = useState<string | null>(null)
+  const [guestName, setGuestName] = useState<string>("")
+  const [guestAvatar, setGuestAvatar] = useState<string | null>(null)
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [postSheetOpen, setPostSheetOpen] = useState(false)
 
   useEffect(() => {
-    if (!isPartyStarted()) router.replace("/");
-  }, [router]);
+    if (!isPartyStarted()) router.replace("/")
+  }, [router])
 
   useEffect(() => {
-    setGuestId(getGuestId());
-  }, []);
+    setGuestId(getGuestId())
+  }, [])
 
   useEffect(() => {
-    if (!guestId) return;
-    const supabase = createClient();
+    if (!guestId) return
+    const supabase = createClient()
     supabase
       .from("guests")
       .select("zodiac_sign, name, avatar_url")
@@ -65,20 +65,24 @@ export default function DashboardLayout({
       .single()
       .then(({ data }) => {
         if (data) {
-          const d = data as { zodiac_sign: string | null; name: string; avatar_url: string | null };
-          setMyZodiac(d.zodiac_sign);
-          setGuestName(d.name ?? "");
-          setGuestAvatar(d.avatar_url);
+          const d = data as {
+            zodiac_sign: string | null
+            name: string
+            avatar_url: string | null
+          }
+          setMyZodiac(d.zodiac_sign)
+          setGuestName(d.name ?? "")
+          setGuestAvatar(d.avatar_url)
         }
-      });
-  }, [guestId]);
+      })
+  }, [guestId])
 
   if (!guestId) {
     return (
       <div className="min-h-dvh flex items-center justify-center px-6 animate-page-enter">
         <p className="text-[#5c4033]">Loading...</p>
       </div>
-    );
+    )
   }
 
   return (
@@ -86,13 +90,15 @@ export default function DashboardLayout({
       <main className="flex-1 px-5 py-8 animate-page-enter">{children}</main>
       <nav className="fixed bottom-0 left-0 right-0 min-h-[64px] py-2 pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pb-[max(0.5rem,env(safe-area-inset-bottom))] bg-white/80 backdrop-blur-xl border-t border-[#e8ddd0]/60 flex items-center justify-around">
         {TABS.map((tab) => {
-          const isActive = pathname === tab.href;
+          const isActive = pathname === tab.href
           return (
             <Link
               key={tab.href}
               href={tab.href}
               className={`relative flex flex-col items-center justify-center min-h-[44px] min-w-[60px] py-2 px-4 rounded-2xl transition-colors duration-300 active:scale-95 touch-manipulation ${
-                isActive ? "text-[#c41e3a] font-medium" : "text-[#8b7355] hover:text-[#c41e3a]"
+                isActive
+                  ? "text-[#c41e3a] font-medium"
+                  : "text-[#8b7355] hover:text-[#c41e3a]"
               }`}
             >
               {isActive && (
@@ -104,7 +110,7 @@ export default function DashboardLayout({
               <tab.Icon className="size-6" />
               <span className="text-xs">{tab.label}</span>
             </Link>
-          );
+          )
         })}
       </nav>
 
@@ -128,8 +134,12 @@ export default function DashboardLayout({
           <div className="w-9 h-1 rounded-full bg-black/12" aria-hidden />
         </div>
         <div className="shrink-0 px-6 pb-4">
-          <p className="text-footnote text-[#8b7355] tracking-wide">For introverts</p>
-          <h2 className="text-title text-[#1a0f0a] mt-0.5">Conversation starters</h2>
+          <p className="text-footnote text-[#8b7355] tracking-wide">
+            For introverts
+          </p>
+          <h2 className="text-title text-[#1a0f0a] mt-0.5">
+            Conversation starters
+          </h2>
         </div>
         <ul className="flex-1 overflow-y-auto px-5 pb-8 space-y-1 scrollbar-hide">
           {getConversationStarters(myZodiac).map((starter, i) => (
@@ -168,5 +178,5 @@ export default function DashboardLayout({
         guestAvatar={guestAvatar}
       />
     </div>
-  );
+  )
 }
