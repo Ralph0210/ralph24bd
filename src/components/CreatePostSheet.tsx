@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { getOrCreateGuestId } from "@/lib/guest-id";
 import { createClient } from "@/lib/supabase/client";
-import { compressImage } from "@/lib/compress-image";
+import { compressImage, getImagePreviewUrl } from "@/lib/compress-image";
 import { X, ImagePlus } from "lucide-react";
 
 const MAX_PHOTOS = 4;
@@ -29,18 +29,20 @@ export function CreatePostSheet({
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
-    const valid = files.filter((f) => f.type.startsWith("image/"));
+    const valid = files.filter((f) => f.type.startsWith("image/") || f.name.match(/\.(heic|heif)$/i));
     const toAdd = valid.slice(0, MAX_PHOTOS - photoFiles.length);
     if (toAdd.length === 0) return;
 
     setPhotoFiles((prev) => [...prev, ...toAdd].slice(0, MAX_PHOTOS));
-    setPhotoPreviews((prev) => {
-      const newPreviews = toAdd.map((f) => URL.createObjectURL(f));
-      return [...prev, ...newPreviews].slice(0, MAX_PHOTOS);
-    });
+    try {
+      const newPreviews = await Promise.all(toAdd.map((f) => getImagePreviewUrl(f)));
+      setPhotoPreviews((prev) => [...prev, ...newPreviews].slice(0, MAX_PHOTOS));
+    } catch {
+      setError("Could not preview some images");
+    }
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -213,7 +215,7 @@ export function CreatePostSheet({
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/jpeg,image/png,image/webp"
+            accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
             multiple
             onChange={handlePhotoChange}
             className="hidden"

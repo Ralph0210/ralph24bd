@@ -1,14 +1,43 @@
 /**
  * Compress an image file for avatar upload.
  * Resizes to max 400px, outputs JPEG ~0.8 quality, target ~100KB.
+ * Converts HEIC/HEIF to JPEG when browser can't decode them natively.
  */
 
 const MAX_DIM = 400;
 const JPEG_QUALITY = 0.8;
 const TARGET_BYTES = 100 * 1024;
 
+const HEIC_TYPES = ["image/heic", "image/heif", "image/heic-sequence", "image/heif-sequence"];
+const HEIC_EXT = /\.(heic|heif)$/i;
+
+export function isHeic(file: File): boolean {
+  return HEIC_TYPES.includes(file.type.toLowerCase()) || HEIC_EXT.test(file.name);
+}
+
+/** Returns an object URL for img src. For HEIC, converts to JPEG first. Caller must revoke the URL. */
+export async function getImagePreviewUrl(file: File): Promise<string> {
+  if (!isHeic(file)) {
+    return URL.createObjectURL(file);
+  }
+  const heic2any = (await import("heic2any")).default;
+  const converted = await heic2any({ blob: file, toType: "image/jpeg" });
+  const blob = Array.isArray(converted) ? converted[0] : converted;
+  return URL.createObjectURL(blob);
+}
+
 export async function compressImage(file: File): Promise<Blob> {
-  const img = await loadImage(file);
+  let source = file;
+  if (isHeic(file)) {
+    const heic2any = (await import("heic2any")).default;
+    const converted = await heic2any({ blob: file, toType: "image/jpeg" });
+    const blob = Array.isArray(converted) ? converted[0] : converted;
+    source = new File([blob], file.name.replace(/\.[^.]+$/i, ".jpg"), {
+      type: "image/jpeg",
+      lastModified: Date.now(),
+    });
+  }
+  const img = await loadImage(source);
   const { width, height } = clampDimensions(img.width, img.height, MAX_DIM);
 
   const canvas = document.createElement("canvas");

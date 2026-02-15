@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { getOrCreateGuestId } from "@/lib/guest-id";
 import { createClient } from "@/lib/supabase/client";
-import { compressImage } from "@/lib/compress-image";
+import { compressImage, getImagePreviewUrl } from "@/lib/compress-image";
 import { X, ImagePlus, PenSquare, BarChart3, Plus } from "lucide-react";
 
 const MAX_PHOTOS = 4;
@@ -18,6 +18,7 @@ interface CreateContentSheetProps {
   onClose: () => void;
   guestName?: string;
   guestAvatar?: string | null;
+  overrideGuestId?: string | null;
 }
 
 export function CreateContentSheet({
@@ -25,6 +26,7 @@ export function CreateContentSheet({
   onClose,
   guestName = "",
   guestAvatar,
+  overrideGuestId,
 }: CreateContentSheetProps) {
   const [mode, setMode] = useState<Mode>("choice");
   const [message, setMessage] = useState("");
@@ -57,17 +59,19 @@ export function CreateContentSheet({
     }
   }
 
-  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
-    const valid = files.filter((f) => f.type.startsWith("image/"));
+    const valid = files.filter((f) => f.type.startsWith("image/") || f.name.match(/\.(heic|heif)$/i));
     const toAdd = valid.slice(0, MAX_PHOTOS - photoFiles.length);
     if (toAdd.length === 0) return;
     setPhotoFiles((prev) => [...prev, ...toAdd].slice(0, MAX_PHOTOS));
-    setPhotoPreviews((prev) => {
-      const newPreviews = toAdd.map((f) => URL.createObjectURL(f));
-      return [...prev, ...newPreviews].slice(0, MAX_PHOTOS);
-    });
+    try {
+      const newPreviews = await Promise.all(toAdd.map((f) => getImagePreviewUrl(f)));
+      setPhotoPreviews((prev) => [...prev, ...newPreviews].slice(0, MAX_PHOTOS));
+    } catch {
+      setError("Could not preview some images");
+    }
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
@@ -101,7 +105,7 @@ export function CreateContentSheet({
     }
     setLoading(true);
     setError("");
-    const guestId = getOrCreateGuestId();
+    const guestId = overrideGuestId ?? getOrCreateGuestId();
     if (!guestId) {
       setError("Session expired");
       setLoading(false);
@@ -151,7 +155,7 @@ export function CreateContentSheet({
     }
     setLoading(true);
     setError("");
-    const guestId = getOrCreateGuestId();
+    const guestId = overrideGuestId ?? getOrCreateGuestId();
     if (!guestId) {
       setError("Session expired");
       setLoading(false);
@@ -210,7 +214,7 @@ export function CreateContentSheet({
           <button
             type="button"
             onClick={goBack}
-            className="py-2 px-1 -ml-1 text-[#c41e3a] text-footnote font-semibold active:opacity-70"
+            className="py-3 px-4 -ml-2 min-h-[44px] text-[#c41e3a] text-[15px] font-semibold active:opacity-70 touch-manipulation"
           >
             {mode === "choice" ? "Cancel" : "Back"}
           </button>
@@ -224,7 +228,7 @@ export function CreateContentSheet({
               type="button"
               onClick={handlePostSubmit}
               disabled={loading || !message.trim()}
-              className="py-2 px-1 -mr-1 text-[#c41e3a] text-footnote font-semibold disabled:opacity-40 active:opacity-70"
+              className="py-3 px-5 -mr-2 min-h-[44px] rounded-xl text-[#c41e3a] text-[15px] font-semibold disabled:opacity-40 active:opacity-70 touch-manipulation"
             >
               {loading ? "Posting…" : "Post"}
             </button>
@@ -234,12 +238,12 @@ export function CreateContentSheet({
               type="button"
               onClick={handlePollSubmit}
               disabled={loading}
-              className="py-2 px-1 -mr-1 text-[#c41e3a] text-footnote font-semibold disabled:opacity-40 active:opacity-70"
+              className="py-3 px-5 -mr-2 min-h-[44px] rounded-xl text-[#c41e3a] text-[15px] font-semibold disabled:opacity-40 active:opacity-70 touch-manipulation"
             >
               {loading ? "Creating…" : "Create"}
             </button>
           )}
-          {mode === "choice" && <div className="w-14" />}
+          {mode === "choice" && <div className="w-16" />}
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 pb-6 min-h-0">
@@ -334,7 +338,7 @@ export function CreateContentSheet({
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/jpeg,image/png,image/webp"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
                 multiple
                 onChange={handlePhotoChange}
                 className="hidden"

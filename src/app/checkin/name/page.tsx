@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import { getOrCreateGuestId } from "@/lib/guest-id";
 import { createClient } from "@/lib/supabase/client";
-import { compressImage } from "@/lib/compress-image";
+import { compressImage, getImagePreviewUrl } from "@/lib/compress-image";
 
 export default function NameAndMessagePage() {
   const router = useRouter();
@@ -36,17 +36,23 @@ export default function NameAndMessagePage() {
       });
   }, [router]);
 
-  function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      setError("Please choose an image (JPEG, PNG, or WebP)");
+    if (!file.type.startsWith("image/") && !file.name.match(/\.(heic|heif)$/i)) {
+      setError("Please choose an image (JPEG, PNG, WebP, or HEIC)");
       return;
     }
     setPhotoFile(file);
     setError("");
-    const url = URL.createObjectURL(file);
-    setPhotoPreview(url);
+    try {
+      const url = await getImagePreviewUrl(file);
+      if (photoPreview) URL.revokeObjectURL(photoPreview);
+      setPhotoPreview(url);
+    } catch {
+      setError("Could not preview this image");
+    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   function clearPhoto() {
@@ -126,7 +132,7 @@ export default function NameAndMessagePage() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/jpeg,image/png,image/webp"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
                 onChange={handlePhotoChange}
                 className="absolute inset-0 opacity-0 cursor-pointer rounded-full"
                 aria-label="Upload profile photo"

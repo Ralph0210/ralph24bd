@@ -5,10 +5,11 @@ import Link from "next/link"
 import { Card } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import { Avatar } from "@/components/ui/Avatar"
-import { Wine, Mail, Trophy, MessageCircle, ChevronRight } from "lucide-react"
+import { Wine, Mail, Trophy, MessageCircle, ChevronRight, Pencil } from "lucide-react"
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter"
 import { PostCard, type PostWithMeta } from "@/components/PostCard"
 import { PollCard, type PollWithMeta } from "@/components/PollCard"
+import { EditProfileSheet } from "@/components/EditProfileSheet"
 import { getGuestId } from "@/lib/guest-id"
 import { createClient } from "@/lib/supabase/client"
 
@@ -34,6 +35,7 @@ export default function DashboardHomePage() {
     >
   >([])
   const [envelopesExpanded, setEnvelopesExpanded] = useState(false)
+  const [profileSheetOpen, setProfileSheetOpen] = useState(false)
   const [loading, setLoading] = useState(true)
 
   const fetchData = useCallback(() => {
@@ -342,13 +344,30 @@ export default function DashboardHomePage() {
     <div className="max-w-sm mx-auto space-y-8 animate-page-enter">
       <div className="flex items-center gap-3 animate-fade-in-up">
         <Avatar src={guest?.avatar_url} name={guest?.name} size="md" />
-        <div>
-          <h1 className="text-title text-[#1a0f0a]">
-            Hey {guest?.name || "there"}
-          </h1>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <h1 className="text-title text-[#1a0f0a]">
+              Hey {guest?.name || "there"}
+            </h1>
+            <button
+              type="button"
+              onClick={() => setProfileSheetOpen(true)}
+              className="p-2 -m-2 rounded-full text-[#8b7355] hover:bg-[#e8ddd0]/50 active:scale-95 transition-transform"
+              aria-label="Edit profile"
+            >
+              <Pencil className="size-4" />
+            </button>
+          </div>
           <p className="text-footnote text-[#8b7355]">Thx for coming!</p>
         </div>
       </div>
+      <EditProfileSheet
+        open={profileSheetOpen}
+        onClose={() => setProfileSheetOpen(false)}
+        currentName={guest?.name ?? ""}
+        currentAvatar={guest?.avatar_url ?? null}
+        onSaved={fetchData}
+      />
 
       <Card className="animate-fade-in-up animate-fade-in-up-delay-1 tap-scale">
         <div className="flex items-center gap-2 mb-2">
