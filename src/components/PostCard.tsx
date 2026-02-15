@@ -25,9 +25,11 @@ interface PostCardProps {
   onLikeChange?: () => void;
   onCommentAdd?: () => void;
   overrideGuestId?: string | null;
+  /** Hide like and comment when true (e.g. before check-in) */
+  readOnly?: boolean;
 }
 
-export function PostCard({ post, onLikeChange, onCommentAdd, overrideGuestId }: PostCardProps) {
+export function PostCard({ post, onLikeChange, onCommentAdd, overrideGuestId, readOnly }: PostCardProps) {
   const guestId = overrideGuestId !== undefined ? overrideGuestId : getGuestId();
   const [liked, setLiked] = useState(post.liked_by_me ?? false);
   const [likeCount, setLikeCount] = useState(post.like_count ?? 0);
@@ -145,34 +147,36 @@ export function PostCard({ post, onLikeChange, onCommentAdd, overrideGuestId }: 
         </div>
       )}
 
-      <div className="flex items-center gap-6 px-4 py-3 border-t border-[#e8ddd0]/60">
-        <button
-          type="button"
-          onClick={toggleLike}
-          className={`flex items-center gap-2 -ml-2 px-2 py-1.5 rounded-xl active:scale-95 transition-all ${
-            liked ? "text-[#c41e3a]" : "text-[#8b7355]"
-          }`}
-        >
-          <Heart className={`size-5 ${liked ? "fill-current" : ""}`} />
-          <span className="text-footnote font-medium">
-            {likeCount > 0 ? likeCount : "Like"}
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowComments(!showComments)}
-          className={`flex items-center gap-2 -ml-2 px-2 py-1.5 rounded-xl active:scale-95 transition-all ${
-            showComments ? "text-[#c41e3a]" : "text-[#8b7355]"
-          }`}
-        >
-          <MessageCircle className="size-5" />
-          <span className="text-footnote font-medium">
-            {comments.length > 0 ? comments.length : "Comment"}
-          </span>
-        </button>
-      </div>
+      {!readOnly && (
+        <div className="flex items-center gap-6 px-4 py-3 border-t border-[#e8ddd0]/60">
+          <button
+            type="button"
+            onClick={toggleLike}
+            className={`flex items-center gap-2 -ml-2 px-2 py-1.5 rounded-xl active:scale-95 transition-all ${
+              liked ? "text-[#c41e3a]" : "text-[#8b7355]"
+            }`}
+          >
+            <Heart className={`size-5 ${liked ? "fill-current" : ""}`} />
+            <span className="text-footnote font-medium">
+              {likeCount > 0 ? likeCount : "Like"}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowComments(!showComments)}
+            className={`flex items-center gap-2 -ml-2 px-2 py-1.5 rounded-xl active:scale-95 transition-all ${
+              showComments ? "text-[#c41e3a]" : "text-[#8b7355]"
+            }`}
+          >
+            <MessageCircle className="size-5" />
+            <span className="text-footnote font-medium">
+              {comments.length > 0 ? comments.length : "Comment"}
+            </span>
+          </button>
+        </div>
+      )}
 
-      {showComments && (
+      {!readOnly && showComments && (
         <div className="px-4 pb-4 pt-0 border-t border-[#e8ddd0]/40">
           <div className="space-y-3 mt-3 max-h-40 overflow-y-auto scrollbar-hide">
             {comments.map((c) => (

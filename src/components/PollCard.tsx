@@ -21,9 +21,11 @@ interface PollCardProps {
   poll: PollWithMeta;
   onVote?: () => void;
   overrideGuestId?: string | null;
+  /** Show options as non-interactive when true (e.g. before check-in) */
+  readOnly?: boolean;
 }
 
-export function PollCard({ poll, onVote, overrideGuestId }: PollCardProps) {
+export function PollCard({ poll, onVote, overrideGuestId, readOnly }: PollCardProps) {
   const defaultGuestId = getGuestId();
   const guestId = overrideGuestId ?? defaultGuestId;
   const [votedOptionId, setVotedOptionId] = useState<string | null>(
@@ -90,15 +92,17 @@ export function PollCard({ poll, onVote, overrideGuestId }: PollCardProps) {
             const isVoted = votedOptionId === opt.id;
 
             return (
-              <button
+              <div
                 key={opt.id}
-                type="button"
-                onClick={() => vote(opt.id)}
+                role={readOnly ? undefined : "button"}
+                onClick={readOnly ? undefined : () => vote(opt.id)}
                 className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${
-                  isVoted
-                    ? "border-[#c41e3a] bg-[#c41e3a]/5"
-                    : "border-[#e8ddd0] hover:border-[#c41e3a]/40"
-                } active:scale-[0.99]`}
+                  readOnly
+                    ? "border-[#e8ddd0] bg-[#fef8f0]/50 cursor-default"
+                    : isVoted
+                      ? "border-[#c41e3a] bg-[#c41e3a]/5 cursor-pointer"
+                      : "border-[#e8ddd0] hover:border-[#c41e3a]/40 cursor-pointer"
+                } ${!readOnly && "active:scale-[0.99]"}`}
               >
                 <div className="flex justify-between items-center gap-2">
                   <span className="text-[#1a0f0a] font-medium">{opt.label}</span>
@@ -117,7 +121,7 @@ export function PollCard({ poll, onVote, overrideGuestId }: PollCardProps) {
                     />
                   </div>
                 )}
-              </button>
+              </div>
             );
           })}
         </div>
