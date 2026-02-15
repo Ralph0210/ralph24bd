@@ -4,7 +4,11 @@ import { useState, useRef } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { getOrCreateGuestId } from "@/lib/guest-id";
 import { createClient } from "@/lib/supabase/client";
-import { compressImage, getImagePreviewUrl } from "@/lib/compress-image";
+import {
+    compressImage,
+    getImagePreviewUrl,
+    isHeic,
+  } from "@/lib/compress-image";
 import { X, ImagePlus, PenSquare, BarChart3, Plus } from "lucide-react";
 
 const MAX_PHOTOS = 4;
@@ -62,9 +66,15 @@ export function CreateContentSheet({
   async function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
-    const valid = files.filter((f) => f.type.startsWith("image/") || f.name.match(/\.(heic|heif)$/i));
+    const valid = files.filter(
+      (f) => f.type.startsWith("image/") || isHeic(f),
+    );
     const toAdd = valid.slice(0, MAX_PHOTOS - photoFiles.length);
-    if (toAdd.length === 0) return;
+    if (toAdd.length === 0) {
+      setError("Please choose an image (JPEG, PNG, WebP, or HEIC)");
+      return;
+    }
+    setError("");
     setPhotoFiles((prev) => [...prev, ...toAdd].slice(0, MAX_PHOTOS));
     try {
       const newPreviews = await Promise.all(toAdd.map((f) => getImagePreviewUrl(f)));
