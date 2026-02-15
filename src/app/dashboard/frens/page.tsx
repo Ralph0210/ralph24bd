@@ -7,7 +7,12 @@ import { getGuestId } from "@/lib/guest-id";
 import { getZodiacEmoji } from "@/lib/chinese-zodiac";
 import { createClient } from "@/lib/supabase/client";
 
-type Guest = { name: string; avatar_url: string | null; zodiac_sign: string | null };
+type Guest = {
+  name: string;
+  avatar_url: string | null;
+  zodiac_sign: string | null;
+  participation: string | null;
+};
 
 export default function FrensPage() {
   const [myZodiac, setMyZodiac] = useState<string | null>(null);
@@ -21,7 +26,7 @@ export default function FrensPage() {
     const supabase = createClient();
     supabase
       .from("guests")
-      .select("name, avatar_url, zodiac_sign, guest_id")
+      .select("name, avatar_url, zodiac_sign, guest_id, participation")
       .not("zodiac_sign", "is", null)
       .then(({ data }) => {
         const guests = (data || []) as (Guest & { guest_id: string })[];
@@ -85,6 +90,9 @@ export default function FrensPage() {
               <li key={i} className="flex items-center gap-2">
                 <Avatar src={b.avatar_url} name={b.name} size="sm" />
                 <span className="font-medium">{b.name}</span>
+                <span className={`text-caption px-2 py-0.5 rounded-full shrink-0 ${(b.participation || "in_person") === "remote" ? "bg-blue-500/15 text-blue-700" : "bg-[#c41e3a]/10 text-[#c41e3a]"}`}>
+                  {(b.participation || "in_person") === "remote" ? "Remote" : "In person"}
+                </span>
               </li>
             ))}
           </ul>
@@ -99,8 +107,11 @@ export default function FrensPage() {
               <div className="flex items-center gap-2 min-w-0">
                 <Avatar src={g.avatar_url} name={g.name} size="sm" />
                 <span className="font-medium text-[#1a0f0a] truncate">{g.name}</span>
+                <span className={`text-caption px-2 py-0.5 rounded-full shrink-0 ${(g.participation || "in_person") === "remote" ? "bg-blue-500/15 text-blue-700" : "bg-[#c41e3a]/10 text-[#c41e3a]"}`}>
+                  {(g.participation || "in_person") === "remote" ? "Remote" : "In person"}
+                </span>
               </div>
-              <span className="text-[#5c4033]">
+              <span className="text-[#5c4033] shrink-0">
                 {g.zodiac_sign ? (
                   <>
                     <span className="text-base">{getZodiacEmoji(g.zodiac_sign)}</span>{" "}

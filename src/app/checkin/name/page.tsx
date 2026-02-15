@@ -13,6 +13,7 @@ export default function NameAndMessagePage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
+  const [participation, setParticipation] = useState<"in_person" | "remote">("in_person");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -94,6 +95,7 @@ export default function NameAndMessagePage() {
         name: name.trim(),
         message_to_ralph: message.trim() || null,
         avatar_url: avatarUrl,
+        participation,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "guest_id" }
@@ -149,6 +151,33 @@ export default function NameAndMessagePage() {
                 )}
               </p>
             </div>
+          </div>
+          <label className="block text-footnote font-medium text-[#5c4033] mb-2">
+            In person or remote?
+          </label>
+          <div className="flex gap-2 mb-5">
+            <button
+              type="button"
+              onClick={() => setParticipation("in_person")}
+              className={`flex-1 py-3 px-4 rounded-[14px] border text-footnote font-medium transition-colors ${
+                participation === "in_person"
+                  ? "border-[#c41e3a] bg-[#c41e3a]/10 text-[#c41e3a]"
+                  : "border-[#e8ddd0] bg-white/80 text-[#8b7355] hover:border-[#c41e3a]/40"
+              }`}
+            >
+              In person
+            </button>
+            <button
+              type="button"
+              onClick={() => setParticipation("remote")}
+              className={`flex-1 py-3 px-4 rounded-[14px] border text-footnote font-medium transition-colors ${
+                participation === "remote"
+                  ? "border-[#c41e3a] bg-[#c41e3a]/10 text-[#c41e3a]"
+                  : "border-[#e8ddd0] bg-white/80 text-[#8b7355] hover:border-[#c41e3a]/40"
+              }`}
+            >
+              Remote
+            </button>
           </div>
           <label className="block text-footnote font-medium text-[#5c4033] mb-2">
             Name (required)
