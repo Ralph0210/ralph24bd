@@ -562,11 +562,22 @@ textarea:focus {
 
 /* Form error - gentle shake */
 @keyframes shake-gentle {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-4px); }
-  40% { transform: translateX(4px); }
-  60% { transform: translateX(-3px); }
-  80% { transform: translateX(3px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
 }
 .animate-shake {
   animation: shake-gentle 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
@@ -574,8 +585,12 @@ textarea:focus {
 
 /* Page content wrap - soft mount for route changes */
 @keyframes page-enter {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 .animate-page-enter {
   animation: page-enter 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
@@ -649,26 +664,53 @@ textarea:focus {
 
 /* Landing page - envelope bounce + glow */
 @keyframes envelope-bounce {
-  0%, 100% { transform: translateY(0) scale(1); }
-  25% { transform: translateY(-8px) scale(1.02); }
-  50% { transform: translateY(-4px) scale(0.98); }
-  75% { transform: translateY(-10px) scale(1.01); }
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    transform: translateY(-8px) scale(1.02);
+  }
+  50% {
+    transform: translateY(-4px) scale(0.98);
+  }
+  75% {
+    transform: translateY(-10px) scale(1.01);
+  }
 }
 @keyframes envelope-glow {
-  0%, 100% { filter: drop-shadow(0 8px 24px rgba(196, 30, 58, 0.2)); }
-  50% { filter: drop-shadow(0 12px 32px rgba(196, 30, 58, 0.35)); }
+  0%,
+  100% {
+    filter: drop-shadow(0 8px 24px rgba(196, 30, 58, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 12px 32px rgba(196, 30, 58, 0.35));
+  }
 }
 @keyframes title-shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
 }
 @keyframes coin-spin {
-  from { transform: rotateY(0deg); }
-  to { transform: rotateY(360deg); }
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
 }
 @keyframes float-slow {
-  0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(-12px) rotate(2deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(2deg);
+  }
 }
 .animate-envelope-bounce {
   animation: envelope-bounce 3s ease-in-out infinite;
