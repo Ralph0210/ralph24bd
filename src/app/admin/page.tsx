@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/client"
 import { getAdminGuestId } from "@/lib/guest-id"
 import { compressImage, getImagePreviewUrl } from "@/lib/compress-image"
 import { CreateContentSheet } from "@/components/CreateContentSheet"
-import { PenSquare } from "lucide-react"
+import { PenSquare, Mail } from "lucide-react"
 
 type Message = { name: string; message_to_ralph: string | null }
 
@@ -21,6 +21,14 @@ type CheckedInGuest = {
   zodiac_sign: string | null
   participation: string | null
   created_at: string
+}
+
+type PrizePick = {
+  guest_id: string
+  prize_label: string
+  prize_rarity: string | null
+  picked_at: string
+  guest_name?: string
 }
 
 export default function AdminPage() {
@@ -38,6 +46,8 @@ export default function AdminPage() {
   const [hostBirthYear, setHostBirthYear] = useState("")
   const [hostPhotoFile, setHostPhotoFile] = useState<File | null>(null)
   const [hostPhotoPreview, setHostPhotoPreview] = useState<string | null>(null)
+  const [prizePicks, setPrizePicks] = useState<PrizePick[]>([])
+  const [totalEnvelopeCount, setTotalEnvelopeCount] = useState(0)
   const [profileSaving, setProfileSaving] = useState(false)
   const [profileError, setProfileError] = useState("")
   const [profileSaved, setProfileSaved] = useState(false)
@@ -75,13 +85,49 @@ export default function AdminPage() {
         .select("id, guest_id, question, created_at")
         .order("created_at", { ascending: false })
         .limit(20),
-    ]).then(async ([r, m, guestsRes, pRes, pollsRes]) => {
+      supabase
+        .from("prize_picks")
+        .select("guest_id, prize_label, prize_rarity, picked_at", {
+          count: "exact",
+        })
+        .order("picked_at", { ascending: false })
+        .limit(100),
+    ]).then(async ([r, m, guestsRes, pRes, pollsRes, picksRes]) => {
       if (r.data)
         setRalphDrinks(
           (r.data as { ralph_drink_count: number }).ralph_drink_count,
         )
       setMessages((m.data || []) as Message[])
       setCheckedInGuests((guestsRes.data || []) as CheckedInGuest[])
+
+      const picksData = ((picksRes as { data?: unknown[] }).data || []) as {
+        guest_id: string
+        prize_label: string
+        prize_rarity: string | null
+        picked_at: string
+      }[]
+      const cnt = (picksRes as { count?: number | null }).count
+      setTotalEnvelopeCount(cnt != null ? cnt : picksData.length)
+      if (picksData.length > 0) {
+        const pickerIds = [...new Set(picksData.map((x) => x.guest_id))]
+        const { data: pickerGuests } = await supabase
+          .from("guests")
+          .select("guest_id, name")
+          .in("guest_id", pickerIds)
+        const pickerMap = Object.fromEntries(
+          ((pickerGuests || []) as { guest_id: string; name: string }[]).map(
+            (g) => [g.guest_id, g.name],
+          ),
+        )
+        setPrizePicks(
+          picksData.map((p) => ({
+            ...p,
+            guest_name: pickerMap[p.guest_id] ?? "Someone",
+          })),
+        )
+      } else {
+        setPrizePicks([])
+      }
 
       const postsData = ((pRes as { data?: unknown[] }).data || []) as {
         id: string
@@ -675,6 +721,40 @@ export default function AdminPage() {
                     </span>
                   </div>
                 </div>
+              </li>
+            ))
+          )}
+        </ul>
+      </Card>
+
+      <Card className="mb-6 animate-fade-in-up animate-fade-in-up-delay-5 tap-scale">
+        <p className="text-footnote text-[#8b7355] mb-1">
+          Total red envelope opened
+        </p>
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-9 h-9 rounded-xl bg-[#c41e3a]/10 flex items-center justify-center shrink-0">
+            <Mail className="size-5 text-[#c41e3a]" />
+          </div>
+          <span className="h-10 flex items-center text-2xl font-bold text-[#c41e3a] tabular-nums">
+            {totalEnvelopeCount}
+          </span>
+        </div>
+        <p className="text-footnote text-[#8b7355] mb-2">Who got what</p>
+        <ul className="space-y-2 max-h-64 overflow-y-auto scrollbar-hide">
+          {prizePicks.length === 0 ? (
+            <li className="text-[#8b7355] text-sm">No envelopes opened yet</li>
+          ) : (
+            prizePicks.map((p, i) => (
+              <li
+                key={i}
+                className="flex items-center justify-between gap-3 py-2 border-b border-[#e8ddd0]/60 last:border-0"
+              >
+                <span className="font-medium text-[#1a0f0a] truncate">
+                  {p.guest_name}
+                </span>
+                <span className="text-[#5c4033] text-sm shrink-0">
+                  {p.prize_label}
+                </span>
               </li>
             ))
           )}

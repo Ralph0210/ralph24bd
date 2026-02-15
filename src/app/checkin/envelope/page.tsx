@@ -287,6 +287,14 @@ export default function EnvelopePage() {
 
     const guestId = getOrCreateGuestId()
     const supabase = createClient()
+    await supabase.from("guests").upsert(
+      {
+        guest_id: guestId,
+        name: "Guest",
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "guest_id", ignoreDuplicates: true },
+    )
     const { error: pickError } = await supabase.from("prize_picks").insert({
       guest_id: guestId,
       prize_label: prize.label,

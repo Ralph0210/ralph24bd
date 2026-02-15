@@ -29,6 +29,7 @@ export default function DashboardHomePage() {
     drink_count: number
   } | null>(null)
   const [ralphDrinks, setRalphDrinks] = useState(0)
+  const [totalEnvelopeCount, setTotalEnvelopeCount] = useState(0)
   const [myPrizes, setMyPrizes] = useState<
     { prize_label: string; prize_rarity: string | null }[]
   >([])
@@ -64,7 +65,7 @@ export default function DashboardHomePage() {
         .single(),
       supabase
         .from("prize_picks")
-        .select("guest_id, prize_label, prize_rarity")
+        .select("guest_id, prize_label, prize_rarity", { count: "exact" })
         .order("picked_at", { ascending: false })
         .limit(50),
       supabase
@@ -95,6 +96,8 @@ export default function DashboardHomePage() {
         prize_label: string
         prize_rarity: string | null
       }[]
+      const cnt = (p as { count?: number | null }).count
+      setTotalEnvelopeCount(cnt != null ? cnt : picks.length)
       if (picks.length > 0) {
         setMyPrizes(
           picks
@@ -117,6 +120,9 @@ export default function DashboardHomePage() {
             prize_label: x.prize_label,
           })),
         )
+      } else {
+        setMyPrizes([])
+        setPartyPicks([])
       }
       const postsData = (postsRes.data || []) as {
         id: string
@@ -402,7 +408,9 @@ export default function DashboardHomePage() {
               <div className="w-9 h-9 rounded-xl bg-[#c41e3a]/10 flex items-center justify-center shrink-0">
                 <Mail className="size-5 text-[#c41e3a]" />
               </div>
-              <p className="text-footnote text-[#8b7355]">Envelopes opened</p>
+              <p className="text-footnote text-[#8b7355]">
+                Total red envelope opened
+              </p>
             </div>
             <div className="w-9 h-9 rounded-xl bg-[#e8ddd0]/50 flex items-center justify-center shrink-0">
               <ChevronRight
@@ -411,7 +419,7 @@ export default function DashboardHomePage() {
             </div>
           </div>
           <AnimatedCounter
-            value={guest?.envelope_picks_used ?? 0}
+            value={totalEnvelopeCount}
             className="h-12 text-title text-[#1a0f0a]"
           />
         </button>
@@ -420,6 +428,9 @@ export default function DashboardHomePage() {
         >
           <div className="expandable-section-inner">
             <div className="mt-5 pt-5 border-t border-[#e8ddd0]/80 space-y-3">
+              <p className="text-footnote text-[#8b7355] font-medium mb-2">
+                Your openings
+              </p>
               {myPrizes.length === 0 ? (
                 <p className="text-[#8b7355] text-sm">No prizes yet</p>
               ) : (
